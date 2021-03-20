@@ -1,0 +1,101 @@
+#product {
+    .header {
+        .product-image {
+            overflow: hidden;
+            width: 56px;
+            min-width: 56px;
+            max-width: 56px;
+            height: 56px;
+            min-height: 56px;
+            max-height: 56px;
+            border-radius: 4px;
+            img {
+                height: 100%;
+                width: auto;
+                max-width: none;
+            }
+        }
+        .subtitle {
+            margin: 6px 0 0 0;
+        }
+    }
+    .content {
+        .mat-tab-group,
+        .mat-tab-body-wrapper,
+        .tab-content {
+            flex: 1 1 auto;
+            max-width: 100%;
+        }
+        .mat-tab-body-content {
+            display: flex;
+        }
+        .mat-tab-label {
+            height: 64px;
+        }
+        .product-image {
+            overflow: hidden;
+            width: 128px;
+            height: 128px;
+            margin-right: 16px;
+            margin-bottom: 16px;
+            border-radius: 4px;
+            img {
+                height: 100%;
+                width: auto;
+                max-width: none;
+            }
+        }
+        // Temporary prefix alignment fix
+        .mat-form-field-appearance-outline .mat-form-field-prefix,
+        .mat-form-field-appearance-outline .mat-form-field-suffix {
+            top: 0;
+        }
+    }
+}
+
+.absolute-bottom-left {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+}
+
+.absolute-top-right {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.background-photo-holder {
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 5px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+
+::ng-deep {
+    .add-photo-drop-zone {
+        border: 1px dashed #47789f;
+        border-radius: 4px;
+        height: 144px;
+    }
+    .add-photo-content-zone {
+        height: 100%;
+    }
+    .mat-list-item-content {
+        padding: 0px 0px !important;
+    }
+}
+
+.disable-click {
+    pointer-events: none;
+}
+
+.ngx-file-drop__drop-zone {
+    height: 160px !important;
+    border-radius: 0px !important;
+}
+
+.mat-list-item-content {
+    padding: 0px 0px !important;
+}
