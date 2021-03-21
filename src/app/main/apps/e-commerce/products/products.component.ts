@@ -9,7 +9,11 @@ import {
     ViewEncapsulation,
     OnDestroy,
 } from "@angular/core";
-import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {
+    MatDialog,
+    MatDialogRef,
+    MAT_DIALOG_DATA,
+} from "@angular/material/dialog";
 import { MatPaginator } from "@angular/material/paginator";
 import { MatSort } from "@angular/material/sort";
 import { DataSource } from "@angular/cdk/collections";
@@ -22,7 +26,7 @@ import { SelectionModel } from "@angular/cdk/collections";
 import { MatTableDataSource } from "@angular/material/table";
 import { EcommerceProductsService } from "app/main/apps/e-commerce/products/products.service";
 import { takeUntil } from "rxjs/operators";
-import {ProductDialogComponent}from "../product-dialog/product-dialog.component"
+import { ProductDialogComponent } from "../product-dialog/product-dialog.component";
 @Component({
     selector: "e-commerce-products",
     templateUrl: "./products.component.html",
@@ -58,7 +62,7 @@ export class EcommerceProductsComponent implements OnInit, OnDestroy {
     filter: ElementRef;
     isSelected: any[] = [];
     // Private
-    showDeleteButton:boolean=false;
+    showDeleteButton: boolean = false;
     private _unsubscribeAll: Subject<any>;
 
     constructor(
@@ -120,14 +124,15 @@ export class EcommerceProductsComponent implements OnInit, OnDestroy {
     toogleFilter() {
         this.isShowing = !this.isShowing;
     }
-    openDialog(){
+    openDialog(ids: any[]) {
+        console.log(ids);
         const deleteDialog = this.matDialog.open(ProductDialogComponent, {
             disableClose: true,
             data: {
-                selectIds: this.isSelected,
-                width: '300px',
-                height: '400px',
-            }
+                selectIds: ids ? ids : this.isSelected,
+                width: "300px",
+                height: "400px",
+            },
         });
     }
     isAllSelected() {
@@ -153,7 +158,7 @@ export class EcommerceProductsComponent implements OnInit, OnDestroy {
             this.selection.clear();
             this.isSelected = [];
             console.log(this.isSelected);
-            return true
+            return true;
         } else {
             this._ecommerceProductsService.products.forEach((row) => {
                 return this.selection.select(row);

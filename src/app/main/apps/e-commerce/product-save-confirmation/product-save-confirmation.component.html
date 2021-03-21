@@ -1,0 +1,16 @@
+<div [ngStyle]="{ width: data.width }" fxLayout="column">
+    <div class="p-24 bg-light-gray" fxLayout="row" fxLayoutAlign="space-between center"></div>
+    <div [ngStyle]="{ height: '100%' }">
+        <h3 class="text-bold color-black-87 text-capitalize text-center">
+            Are you sure?
+        </h3>
+        <div class="py-12 px-12" fxLayoutGap="16px" class="text-center m-auto" style="display: table; margin: auto">
+            <button mat-raised-button color="warn" (click)="saveAllData(data)">
+                Save
+            </button>
+            <button mat-raised-button class="add-product-button fuse-white mt-24 mt-md-0" (click)="onNoClick()">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>

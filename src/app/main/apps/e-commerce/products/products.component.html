@@ -35,7 +35,7 @@
 
             <!-- / SEARCH -->
 
-            <button mat-raised-button class="add-product-button fuse-white mt-24 mt-md-0" *ngIf="isSelected.length" (click)="openDialog()">
+            <button mat-raised-button class="add-product-button fuse-white mt-24 mt-md-0" *ngIf="isSelected.length" (click)="openDialog(null)">
                 <span>DELETE ALL SELECTED</span>
             </button>
             <!-- ADD BUTTON -->
@@ -248,7 +248,7 @@
                                 '/' +
                                 product.handle
                             ">edit</mat-icon>
-                        <mat-icon mat-icon-button>delete</mat-icon>
+                        <mat-icon mat-icon-button (click)="openDialog([product.id])">delete</mat-icon>
                     </mat-cell>
                 </ng-container>
 

@@ -29,8 +29,8 @@
             </div>
         </div>
 
-        <button mat-raised-button class="save-product-button" [disabled]="productForm.invalid" *ngIf="pageType === 'new'" (click)="addProduct()">
-            <span>ADD</span>
+        <button mat-raised-button class="save-product-button" [disabled]="productForm.invalid" *ngIf="pageType === 'new'" (click)="goToBack()">
+            <span>CANCEL</span>
         </button>
 
         <button mat-raised-button class="save-product-button" [disabled]="productForm.invalid || productForm.pristine" *ngIf="pageType === 'edit'" (click)="saveProduct()">
@@ -168,17 +168,22 @@
                                                         </div>
                                                     </div>
                                                     <div style="margin-top: 20px">
-                                                        <mat-icon mat-list-icon>delete</mat-icon>
+                                                        <mat-icon mat-list-icon (click)="
+                                                                removeFile(
+                                                                    item.id
+                                                                )
+                                                            ">delete</mat-icon>
                                                     </div>
                                                 </div>
                                             </mat-list-item>
                                         </mat-list>
                                         <!--product images-->
-                                        <mat-list *ngIf="product.images.length">
-                                            <mat-list-item *ngFor="
-                                                    let image of product.images;
-                                                    let i = index
-                                                " style="padding: 0 0">
+                                        <mat-list *ngFor="
+                                                let image of allFiles.length
+                                                    ? allFiles
+                                                    : []
+                                            ">
+                                            <mat-list-item style="padding: 0 0" *ngIf="!image.isDeleted">
                                                 <div fxFlex fxLayout="row" fxLayoutAlign="start start" style="
                                                         width: 100%;
                                                         border: 1px dotted black;
@@ -190,17 +195,21 @@
                                                     </div>
                                                     <div style="width: 100%">
                                                         <div mat-line>
-                                                            {{ image.url }}
+                                                            {{ image.fileUrl }}
                                                         </div>
                                                         <div mat-line>
-                                                            {{ image.type }}
+                                                            {{ image.fileType }}
                                                         </div>
                                                         <div mat-line>
                                                             <mat-progress-bar mode="determinate" value="100"></mat-progress-bar>
                                                         </div>
                                                     </div>
                                                     <div style="margin-top: 20px">
-                                                        <mat-icon mat-list-icon>delete</mat-icon>
+                                                        <mat-icon mat-list-icon (click)="
+                                                                removeFile(
+                                                                    image.fileId
+                                                                )
+                                                            ">delete</mat-icon>
                                                     </div>
                                                 </div>
                                             </mat-list-item>
@@ -261,11 +270,7 @@
                                     <input matInput formControlName="ean" required />
                                     <mat-error>EAN is required!</mat-error>
                                 </mat-form-field>
-                                <mat-form-field appearance="outline" fxFlex="100">
-                                    <mat-label>Active</mat-label>
-                                    <input matInput formControlName="active" required />
-                                    <mat-error>Active is required!</mat-error>
-                                </mat-form-field>
+                                <mat-slide-toggle formControlName="active" required>Active</mat-slide-toggle>
                             </div>
 
                             <div fxLayout="row" fxLayoutAlign="center center">
@@ -317,7 +322,7 @@
                             <div fxFlex="1 0 auto" fxLayout="column">
                                 <mat-form-field appearance="outline" fxFlex="100">
                                     <mat-label>Price</mat-label>
-                                    <input matInput formControlName="price" required />
+                                    <input matInput formControlName="price" type="number" required />
                                     <mat-error>Price is required!</mat-error>
                                 </mat-form-field>
                             </div>
@@ -360,22 +365,12 @@
 
                             <div fxFlex="1 0 auto" fxLayout="column">
                                 <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <!-- <mat-label>Categories</mat-label> -->
+
                                     <mat-label>Categories</mat-label>
-
-                                    <mat-chip-list #categoryList name="categories" formControlName="categories">
-                                        <mat-chip *ngFor="
-                                                let category of product.categories
-                                            " [removable]="true" (removed)="
-                                                product.removeCategory(category)
-                                            ">
-                                            {{ category }}
-                                            <mat-icon matChipRemove>cancel</mat-icon>
-                                        </mat-chip>
-
-                                        <input [matChipInputFor]="categoryList" [matChipInputAddOnBlur]="true" (matChipInputTokenEnd)="
-                                                product.addCategory($event)
-                                            " />
-                                    </mat-chip-list>
+                                    <mat-select formControlName="categories" multiple>
+                                        <mat-option *ngFor="let category of categoriess" [value]="category">{{ category }}</mat-option>
+                                    </mat-select>
                                 </mat-form-field>
                                 <div fxLayout="row" fxLayoutAlign="center center">
                                     <button class="mr-8" mat-raised-button matStepperPrevious type="button" color="accent">
@@ -392,16 +387,14 @@
                     <mat-step>
                         <ng-template matStepLabel>Done</ng-template>
 
-                        <div class="h2 m-16" fxLayout="row" fxLayoutAlign="center center">
-                            Thank your for filling out our form.
-                        </div>
+                        <div class="h2 m-16" fxLayout="row" fxLayoutAlign="center center"></div>
 
                         <div fxLayout="row" fxLayoutAlign="center center">
                             <button class="mr-8" mat-raised-button matStepperPrevious type="button" color="accent">
                                 Previous
                             </button>
                             <button mat-raised-button type="button" color="accent" (click)="finishVerticalStepper()">
-                                Finish
+                                Save
                             </button>
                         </div>
                     </mat-step>

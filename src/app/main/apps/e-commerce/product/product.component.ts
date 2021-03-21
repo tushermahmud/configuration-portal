@@ -1,5 +1,11 @@
+import { MatDialog } from "@angular/material/dialog";
 import { Component, OnDestroy, OnInit, ViewEncapsulation } from "@angular/core";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import {
+    FormBuilder,
+    FormGroup,
+    Validators,
+    FormControl,
+} from "@angular/forms";
 import { Location } from "@angular/common";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { Subject } from "rxjs";
@@ -16,7 +22,7 @@ import {
     FileSystemFileEntry,
     FileSystemDirectoryEntry,
 } from "ngx-file-drop";
-
+import { ProductSaveConfirmationComponent } from "../product-save-confirmation/product-save-confirmation.component";
 @Component({
     selector: "e-commerce-product",
     templateUrl: "./product.component.html",
@@ -29,10 +35,18 @@ export class EcommerceProductComponent implements OnInit, OnDestroy {
     pageType: string;
     productForm: FormGroup;
     public images: NgxFileDropEntry[] = [];
-
+    deletedImages: any[] = [];
+    allFiles: any[] = [];
     // Private
     private _unsubscribeAll: Subject<any>;
-
+    categoriess: string[] = [
+        "Extra cheese",
+        "Mushroom",
+        "Onion",
+        "Pepperoni",
+        "Sausage",
+        "Tomato",
+    ];
     /**
      * Constructor
      *
@@ -52,7 +66,8 @@ export class EcommerceProductComponent implements OnInit, OnDestroy {
         private _ecommerceProductService: EcommerceProductService,
         private _formBuilder: FormBuilder,
         private _location: Location,
-        private _matSnackBar: MatSnackBar
+        private _matSnackBar: MatSnackBar,
+        private matDialog: MatDialog
     ) {
         // Set the default
         this.product = new ProductData();
@@ -78,6 +93,25 @@ export class EcommerceProductComponent implements OnInit, OnDestroy {
                     console.log(product);
                     this.product = new ProductData(product);
                     this.pageType = "edit";
+                    product.images.map((file) => {
+                        this.allFiles.push({
+                            fileId: file.id,
+                            fileType: file.type,
+                            fileUrl: file.url,
+                            isDeleted: false,
+                        });
+                    });
+                    console.log(this.allFiles);
+                    // this.getUserProvidedFiles(
+                    //     answer
+                    // ).map((file) =>
+                    //     this.neededFiles.push(
+                    //         new PraxisDocument(
+                    //             file && file.ItemId,
+                    //             file && file.Name
+                    //         )
+                    //     )
+                    // );
                 } else {
                     this.pageType = "new";
                     this.product = new ProductData();
@@ -85,7 +119,7 @@ export class EcommerceProductComponent implements OnInit, OnDestroy {
                         productName: ["", Validators.required],
                         productUrl: ["", Validators.required],
                         ean: ["", Validators.required],
-                        active: ["", Validators.required],
+                        active: [false, Validators.required],
                     });
 
                     this.verticalStepperStep2 = this._formBuilder.group({
@@ -100,7 +134,7 @@ export class EcommerceProductComponent implements OnInit, OnDestroy {
                         images: ["", Validators.required],
                     });
                     this.verticalStepperStep5 = this._formBuilder.group({
-                        categories: [this.product.categories],
+                        categories: [""],
                     });
                 }
 
@@ -116,6 +150,9 @@ export class EcommerceProductComponent implements OnInit, OnDestroy {
         // Unsubscribe from all subscriptions
         this._unsubscribeAll.next();
         this._unsubscribeAll.complete();
+    }
+    goToBack() {
+        this._location.back();
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -160,12 +197,22 @@ export class EcommerceProductComponent implements OnInit, OnDestroy {
             }
         }
     }
+    removeFile(id) {
+        this.allFiles.find((file) => {
+            if (file.fileId === id) {
+                console.log(file);
+
+                file.isDeleted = true;
+            }
+        });
+        console.log(this.allFiles);
+    }
     createProductForm(): FormGroup {
         return this._formBuilder.group({
             id: [this.product.id],
             productName: [this.product.productName],
             description: [this.product.description],
-            categories: [this.product.categories],
+            categories: [this.categoriess],
             shortDescription: [this.product.shortDescription],
             images: [this.product.images],
             price: [this.product.price],
@@ -196,6 +243,7 @@ export class EcommerceProductComponent implements OnInit, OnDestroy {
 
         // this.allFormData = [...step1, ...step2, ...step3, ...step4, ...step5];
         console.log(this.allFormData);
+        this.openSaveProduct(this.allFormData);
     }
     /**
      * Save product
@@ -214,6 +262,21 @@ export class EcommerceProductComponent implements OnInit, OnDestroy {
                 duration: 2000,
             });
         });
+    }
+    openSaveProduct(allFormData: {}) {
+        console.log("tusher");
+        // console.log(ids);
+        const deleteDialog = this.matDialog.open(
+            ProductSaveConfirmationComponent,
+            {
+                disableClose: true,
+                data: {
+                    data: allFormData,
+                    width: "300px",
+                    height: "400px",
+                },
+            }
+        );
     }
 
     /**

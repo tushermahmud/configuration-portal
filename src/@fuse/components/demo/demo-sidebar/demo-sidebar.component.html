@@ -20,11 +20,13 @@
             <span>{{ productData?.productName }}</span>
         </div>
         <h3 class="text-bold">Categories</h3>
-
-        <div class="example-button-row" fxFlex style="display: flex">
-            <button mat-raised-button color="accent" *ngFor="let category of productData?.categories" class="categories mr-8" style="display: block">
-                {{ category }}
-            </button>
-        </div>
+        <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+            <mat-chip-list formControlName="unknown">
+                <mat-chip *ngFor="let category of productData?.categories">
+                    {{ category }}
+                    <mat-icon>cancel</mat-icon>
+                </mat-chip>
+            </mat-chip-list>
+        </mat-form-field>
     </mat-list>
 </div>

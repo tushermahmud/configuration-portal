@@ -34,9 +34,9 @@ import { NgxFileDropModule } from "ngx-file-drop";
 import { MatListModule } from "@angular/material/list";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { MatCheckboxModule } from "@angular/material/checkbox";
-import { ProductDialogComponent } from './product-dialog/product-dialog.component';
-import {MatDialogModule} from '@angular/material/dialog';
-
+import { ProductDialogComponent } from "./product-dialog/product-dialog.component";
+import { MatDialogModule } from "@angular/material/dialog";
+import { ProductSaveConfirmationComponent } from "./product-save-confirmation/product-save-confirmation.component";
 
 const routes: Routes = [
     {
@@ -83,6 +83,7 @@ const routes: Routes = [
         EcommerceOrdersComponent,
         EcommerceOrderComponent,
         ProductDialogComponent,
+        ProductSaveConfirmationComponent,
     ],
     imports: [
         RouterModule.forChild(routes),
@@ -123,6 +124,6 @@ const routes: Routes = [
         EcommerceOrdersService,
         EcommerceOrderService,
     ],
-    entryComponents:[ProductDialogComponent]
+    entryComponents: [ProductDialogComponent, ProductSaveConfirmationComponent],
 })
 export class EcommerceModule {}
