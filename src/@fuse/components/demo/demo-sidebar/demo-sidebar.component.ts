@@ -2,6 +2,7 @@ import { Component, Input, OnInit, ViewEncapsulation } from "@angular/core";
 import { ProductData } from "../../../../app/main/apps/e-commerce/configuration-files/ProductData.model";
 import { fuseAnimations } from "@fuse/animations";
 import { FuseUtils } from "@fuse/utils";
+import { COMMA, ENTER } from "@angular/cdk/keycodes";
 
 @Component({
     selector: "fuse-demo-sidebar",

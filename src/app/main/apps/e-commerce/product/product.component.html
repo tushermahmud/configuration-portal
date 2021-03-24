@@ -58,16 +58,30 @@
                                     <mat-label>Product Name</mat-label>
                                     <input matInput placeholder="Product Name" name="productName" formControlName="productName" required />
                                 </mat-form-field>
-
                                 <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
-                                    <mat-label>Product Description</mat-label>
-                                    <textarea matInput placeholder="Product Description" name="description" formControlName="description" rows="5">
-                                    </textarea>
+                                    <mat-label>Product URL</mat-label>
+                                    <input matInput placeholder="Product URL" name="productUrl" formControlName="productUrl" rows="5" />
                                 </mat-form-field>
                                 <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
-                                    <mat-label>Product Short Description</mat-label>
-                                    <textarea matInput placeholder="Product short Description" name="shortDescription" formControlName="shortDescription" rows="5">
-                                    </textarea>
+                                    <mat-label>EAN</mat-label>
+                                    <input matInput placeholder="EAN" name="ean" formControlName="ean" />
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Creation date</mat-label>
+                                    <!-- #docregion toggle -->
+                                    <input matInput [matDatepicker]="picker" name="creationDate" formControlName="creationDate" />
+                                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                                    <mat-datepicker #picker></mat-datepicker>
+                                    <!-- #enddocregion toggle -->
+                                </mat-form-field>
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Update date</mat-label>
+                                    <!-- #docregion toggle -->
+                                    <input matInput [matDatepicker]="picker1" name="updateDate" formControlName="updateDate" />
+                                    <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                                    <mat-datepicker #picker1></mat-datepicker>
+                                    <!-- #enddocregion toggle -->
                                 </mat-form-field>
                                 <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
                                     <mat-label>Categories</mat-label>
@@ -89,7 +103,47 @@
                                 </mat-form-field>
                             </div>
                         </mat-tab>
+                        <mat-tab label="Description">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div fxLayout="row wrap" fxLayoutAlign="start start">
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Product Description</mat-label>
+                                        <textarea matInput placeholder="Product Description" name="description" formControlName="description" rows="5">
+                                        </textarea>
+                                    </mat-form-field>
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Product Short Description
+                                        </mat-label>
+                                        <textarea matInput placeholder="Product short Description" name="shortDescription" formControlName="shortDescription" rows="5">
+                                        </textarea>
+                                    </mat-form-field>
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Brand</mat-label>
+                                        <input matInput placeholder="Brand" name="brand" formControlName="brand" />
+                                    </mat-form-field>
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Keywords</mat-label>
 
+                                        <mat-chip-list #keywordList name="keywords" formControlName="keywords">
+                                            <mat-chip *ngFor="
+                                                    let keyword of product.keywords
+                                                " [removable]="true" (removed)="
+                                                    product.removeKeyword(
+                                                        keyword
+                                                    )
+                                                ">
+                                                {{ keyword }}
+                                                <mat-icon matChipRemove>cancel</mat-icon>
+                                            </mat-chip>
+
+                                            <input [matChipInputFor]="keywordList" [matChipInputAddOnBlur]="true" (matChipInputTokenEnd)="
+                                                    product.addKeyword($event)
+                                                " />
+                                        </mat-chip-list>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                        </mat-tab>
                         <mat-tab label="Product Images">
                             <div class="tab-content p-24" fusePerfectScrollbar>
                                 <div fxLayout="row wrap" fxLayoutAlign="start start">

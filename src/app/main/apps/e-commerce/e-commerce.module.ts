@@ -7,6 +7,8 @@ import { MatChipsModule } from "@angular/material/chips";
 import { MatRippleModule } from "@angular/material/core";
 import { MatExpansionModule } from "@angular/material/expansion";
 import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatDatepickerModule } from "@angular/material/datepicker";
+import { MatNativeDateModule } from "@angular/material/core";
 import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
 import { MatPaginatorModule } from "@angular/material/paginator";
@@ -87,6 +89,8 @@ const routes: Routes = [
     ],
     imports: [
         RouterModule.forChild(routes),
+        MatDatepickerModule,
+        MatNativeDateModule,
         NgxFileDropModule,
         MatProgressBarModule,
         FuseDemoModule,

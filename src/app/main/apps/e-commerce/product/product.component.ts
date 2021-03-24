@@ -10,6 +10,7 @@ import { Location } from "@angular/common";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
+import { MatCalendarCellClassFunction } from "@angular/material/datepicker";
 
 import { fuseAnimations } from "@fuse/animations";
 import { FuseUtils } from "@fuse/utils";
@@ -23,6 +24,19 @@ import {
     FileSystemDirectoryEntry,
 } from "ngx-file-drop";
 import { ProductSaveConfirmationComponent } from "../product-save-confirmation/product-save-confirmation.component";
+export class DatepickerDateClassExample {
+    dateClass: MatCalendarCellClassFunction<Date> = (cellDate, view) => {
+        // Only highligh dates inside the month view.
+        if (view === "month") {
+            const date = cellDate.getDate();
+
+            // Highlight the 1st and 20th day of each month.
+            return date === 1 || date === 20 ? "example-custom-date-class" : "";
+        }
+
+        return "";
+    };
+}
 @Component({
     selector: "e-commerce-product",
     templateUrl: "./product.component.html",
@@ -88,7 +102,6 @@ export class EcommerceProductComponent implements OnInit, OnDestroy {
         this._ecommerceProductService.onProductChanged
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((product) => {
-                console.log(product);
                 if (product) {
                     console.log(product);
                     this.product = new ProductData(product);
@@ -140,7 +153,6 @@ export class EcommerceProductComponent implements OnInit, OnDestroy {
 
                 this.productForm = this.createProductForm();
             });
-        console.log(this.product);
     }
 
     /**
@@ -213,10 +225,12 @@ export class EcommerceProductComponent implements OnInit, OnDestroy {
             productName: [this.product.productName],
             description: [this.product.description],
             categories: [this.categoriess],
+            keywords: [this.product.keywords],
             shortDescription: [this.product.shortDescription],
             images: [this.product.images],
             price: [this.product.price],
             ean: [this.product.ean],
+            productUrl: [this.product.productUrl],
             active: [this.product.active],
             brand: [this.product.brand],
             creationDate: [this.product.creationDate],

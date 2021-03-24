@@ -2,22 +2,22 @@ import { FuseUtils } from "@fuse/utils";
 import { MatChipInputEvent } from "@angular/material/chips";
 
 export class ProductData {
-    id: string;
-    handle: string;
+    id?: string;
+    handle?: string;
     productName: string;
     description: string;
     shortDescription: string;
     price: string;
-    images: string[];
+    images?: string[];
     ean: string;
-    productUrl: string;
-    keywords: string[];
-    categories: string[];
-    variants: ProductData[];
-    active: boolean;
-    brand: string;
-    creationDate: Date;
-    updateDate: Date;
+    productUrl?: string;
+    keywords?: string[];
+    categories?: string[];
+    variants?: ProductData[];
+    active?: boolean;
+    brand?: string;
+    creationDate?: Date;
+    updateDate?: Date;
     constructor(product?) {
         product = product || {};
         this.id = product.id || FuseUtils.generateGUID();
@@ -27,12 +27,40 @@ export class ProductData {
         this.shortDescription = product.description || "";
         this.categories = product.categories || [];
         this.images = product.images || [];
+        this.keywords = product.keywords || [];
         this.price = product.price || "";
         this.ean = product.ean || "";
         this.active = product.active || true;
         this.brand = product.brand || "";
         this.creationDate = product.creationDate || "";
         this.updateDate = product.creationDate || "";
+    }
+    addKeyword(event: MatChipInputEvent): void {
+        const input = event.input;
+        const value = event.value;
+
+        // Add tag
+        if (value) {
+            this.keywords.push(value);
+        }
+
+        // Reset the input value
+        if (input) {
+            input.value = "";
+        }
+    }
+
+    /**
+     * Remove tag
+     *
+     * @param tag
+     */
+    removeKeyword(tag): void {
+        const index = this.keywords.indexOf(tag);
+
+        if (index >= 0) {
+            this.keywords.splice(index, 1);
+        }
     }
     addCategory(event: MatChipInputEvent): void {
         const input = event.input;

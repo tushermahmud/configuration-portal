@@ -1,9 +1,8 @@
-import { MatChipInputEvent } from '@angular/material/chips';
+import { MatChipInputEvent } from "@angular/material/chips";
 
-import { FuseUtils } from '@fuse/utils';
+import { FuseUtils } from "@fuse/utils";
 
-export class Product
-{
+export class Product {
     id: string;
     name: string;
     handle: string;
@@ -11,10 +10,10 @@ export class Product
     categories: string[];
     tags: string[];
     images: {
-        default: boolean,
-        id: string,
-        url: string,
-        type: string
+        default: boolean;
+        id: string;
+        url: string;
+        type: string;
     }[];
     priceTaxExcl: number;
     priceTaxIncl: number;
@@ -34,13 +33,12 @@ export class Product
      *
      * @param product
      */
-    constructor(product?)
-    {
+    constructor(product?) {
         product = product || {};
         this.id = product.id || FuseUtils.generateGUID();
-        this.name = product.name || '';
+        this.name = product.name || "";
         this.handle = product.handle || FuseUtils.handleize(this.name);
-        this.description = product.description || '';
+        this.description = product.description || "";
         this.categories = product.categories || [];
         this.tags = product.tags || [];
         this.images = product.images || [];
@@ -63,21 +61,18 @@ export class Product
      *
      * @param {MatChipInputEvent} event
      */
-    addCategory(event: MatChipInputEvent): void
-    {
+    addCategory(event: MatChipInputEvent): void {
         const input = event.input;
         const value = event.value;
 
         // Add category
-        if ( value )
-        {
+        if (value) {
             this.categories.push(value);
         }
 
         // Reset the input value
-        if ( input )
-        {
-            input.value = '';
+        if (input) {
+            input.value = "";
         }
     }
 
@@ -86,12 +81,10 @@ export class Product
      *
      * @param category
      */
-    removeCategory(category): void
-    {
+    removeCategory(category): void {
         const index = this.categories.indexOf(category);
 
-        if ( index >= 0 )
-        {
+        if (index >= 0) {
             this.categories.splice(index, 1);
         }
     }
@@ -101,21 +94,18 @@ export class Product
      *
      * @param {MatChipInputEvent} event
      */
-    addTag(event: MatChipInputEvent): void
-    {
+    addTag(event: MatChipInputEvent): void {
         const input = event.input;
         const value = event.value;
 
         // Add tag
-        if ( value )
-        {
+        if (value) {
             this.tags.push(value);
         }
 
         // Reset the input value
-        if ( input )
-        {
-            input.value = '';
+        if (input) {
+            input.value = "";
         }
     }
 
@@ -124,12 +114,10 @@ export class Product
      *
      * @param tag
      */
-    removeTag(tag): void
-    {
+    removeTag(tag): void {
         const index = this.tags.indexOf(tag);
 
-        if ( index >= 0 )
-        {
+        if (index >= 0) {
             this.tags.splice(index, 1);
         }
     }

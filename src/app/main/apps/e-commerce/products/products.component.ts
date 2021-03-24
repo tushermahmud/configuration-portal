@@ -38,8 +38,19 @@ export class EcommerceProductsComponent implements OnInit, OnDestroy {
     form: FormGroup;
     isChecked = true;
     displayColumns: any[];
-
+    isTitle: boolean = false;
+    isEan: boolean = false;
     dataSource: FilesDataSource | null;
+    // productDataInfo: ProductData = {
+    //     productName: "Product Name",
+    //     description: "Description",
+    //     shortDescription: "Short Description",
+    //     price: "Price",
+    //     ean: "EAN",
+    //     brand: "Brand",
+    //     // creationDate: "Created Date",
+    //     // updateDate: Date;
+    // };
     Columns: DisplayColumns = {
         select: "select",
         id: "id",
@@ -113,9 +124,10 @@ export class EcommerceProductsComponent implements OnInit, OnDestroy {
             title: [""],
             // lastName: ["", Validators.required],
             dropdown: ["and"],
+            ean: [""],
             toDropdown: ["to"],
-            fromNumber: [""],
-            toNumber: [""],
+            fromPrice: [""],
+            toPrice: [""],
             acceptTerms: [true],
             onOff: [true],
             attribute: [""],
@@ -140,7 +152,6 @@ export class EcommerceProductsComponent implements OnInit, OnDestroy {
         const numRows = this._ecommerceProductsService.products.length;
         if (numSelected === numRows) {
             this.isSelected = this.selection.selected;
-            console.log(this.isSelected);
         }
         return numSelected === numRows;
     }
@@ -151,6 +162,17 @@ export class EcommerceProductsComponent implements OnInit, OnDestroy {
         return `${this.selection.isSelected(row) ? "deselect" : "select"} row ${
             row.id + 1
         }`;
+    }
+    onChange($event) {
+        let attributeValue = this.form.get("attribute").value;
+        this.form.valueChanges.subscribe((value) => {
+            attributeValue = this.form.get("attribute").value;
+            if (attributeValue === "title") {
+                this.isTitle = true;
+            } else if (attributeValue === "ean") {
+                this.isEan = true;
+            }
+        });
     }
     /** Selects all rows if they are not all selected; otherwise clear selection. */
     masterToggle() {
@@ -310,21 +332,27 @@ export class FilesDataSource extends DataSource<any> {
                 case "id":
                     [propertyA, propertyB] = [a.id, b.id];
                     break;
+                case "shortDescription":
+                    [propertyA, propertyB] = [
+                        a.shortDescription,
+                        b.shortDescription,
+                    ];
+                    break;
                 case "productName":
                     [propertyA, propertyB] = [a.productName, b.productName];
                     break;
-                case "categories":
-                    [propertyA, propertyB] = [a.categories[0], b.categories[0]];
-                    break;
-                case "price":
-                    [propertyA, propertyB] = [a.priceTaxIncl, b.priceTaxIncl];
-                    break;
-                case "quantity":
-                    [propertyA, propertyB] = [a.quantity, b.quantity];
-                    break;
-                case "active":
-                    [propertyA, propertyB] = [a.active, b.active];
-                    break;
+                // case "categories":
+                //     [propertyA, propertyB] = [a.categories[0], b.categories[0]];
+                //     break;
+                // case "price":
+                //     [propertyA, propertyB] = [a.priceTaxIncl, b.priceTaxIncl];
+                //     break;
+                // case "quantity":
+                //     [propertyA, propertyB] = [a.quantity, b.quantity];
+                //     break;
+                // case "active":
+                //     [propertyA, propertyB] = [a.active, b.active];
+                //     break;
             }
 
             const valueA = isNaN(+propertyA) ? propertyA : +propertyA;
