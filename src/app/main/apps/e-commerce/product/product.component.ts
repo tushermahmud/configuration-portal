@@ -23,6 +23,8 @@ import {
     FileSystemFileEntry,
     FileSystemDirectoryEntry,
 } from "ngx-file-drop";
+import Swal from "sweetalert2";
+
 import { ProductSaveConfirmationComponent } from "../product-save-confirmation/product-save-confirmation.component";
 export class DatepickerDateClassExample {
     dateClass: MatCalendarCellClassFunction<Date> = (cellDate, view) => {
@@ -257,7 +259,23 @@ export class EcommerceProductComponent implements OnInit, OnDestroy {
 
         // this.allFormData = [...step1, ...step2, ...step3, ...step4, ...step5];
         console.log(this.allFormData);
-        this.openSaveProduct(this.allFormData);
+        this.openSaveAlert(this.allFormData);
+    }
+    openSaveAlert(allFormData: {}) {
+        Swal.fire({
+            title: "Do you want to save the changes?",
+            showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: `Save`,
+            denyButtonText: `Don't save`,
+        }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+                Swal.fire("Saved!", "", "success");
+            } else if (result.isDenied) {
+                Swal.fire("Changes are not saved", "", "info");
+            }
+        });
     }
     /**
      * Save product

@@ -27,6 +27,8 @@ import { MatTableDataSource } from "@angular/material/table";
 import { EcommerceProductsService } from "app/main/apps/e-commerce/products/products.service";
 import { takeUntil } from "rxjs/operators";
 import { ProductDialogComponent } from "../product-dialog/product-dialog.component";
+import Swal from "sweetalert2";
+
 @Component({
     selector: "e-commerce-products",
     templateUrl: "./products.component.html",
@@ -40,6 +42,11 @@ export class EcommerceProductsComponent implements OnInit, OnDestroy {
     displayColumns: any[];
     isTitle: boolean = false;
     isEan: boolean = false;
+    isUpdate: boolean = false;
+    isCreated: boolean = false;
+    isPrice: boolean = false;
+    isActive: boolean = false;
+
     dataSource: FilesDataSource | null;
     // productDataInfo: ProductData = {
     //     productName: "Product Name",
@@ -131,6 +138,12 @@ export class EcommerceProductsComponent implements OnInit, OnDestroy {
             acceptTerms: [true],
             onOff: [true],
             attribute: [""],
+            updateDate: [""],
+            toUpdated: ["equals"],
+            updateDate1: [""],
+            CreatedDate: [""],
+            toCreated: ["equals"],
+            createdDate1: [""],
         });
     }
     toogleFilter() {
@@ -163,6 +176,26 @@ export class EcommerceProductsComponent implements OnInit, OnDestroy {
             row.id + 1
         }`;
     }
+    openSweetAlert(id: any) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                if (!id) {
+                    console.log(this.isSelected);
+                } else {
+                    console.log(id);
+                }
+                Swal.fire("Deleted!", "Your file has been deleted.", "success");
+            }
+        });
+    }
     onChange($event) {
         let attributeValue = this.form.get("attribute").value;
         this.form.valueChanges.subscribe((value) => {
@@ -171,6 +204,14 @@ export class EcommerceProductsComponent implements OnInit, OnDestroy {
                 this.isTitle = true;
             } else if (attributeValue === "ean") {
                 this.isEan = true;
+            } else if (attributeValue === "updateDate") {
+                this.isUpdate = true;
+            } else if (attributeValue === "createdDate") {
+                this.isCreated = true;
+            } else if (attributeValue === "active") {
+                this.isActive = true;
+            } else if (attributeValue === "price") {
+                this.isPrice = true;
             }
         });
     }
