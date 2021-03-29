@@ -1,3 +1,4 @@
+import { AppSettingsService } from "./../configuration-files/AppSettingsService";
 import { ProductData } from "../configuration-files/ProductData.model";
 import { DisplayColumns } from "./../configuration-files/ProductData.model";
 
@@ -58,16 +59,16 @@ export class EcommerceProductsComponent implements OnInit, OnDestroy {
     //     // creationDate: "Created Date",
     //     // updateDate: Date;
     // };
-    Columns: DisplayColumns = {
-        select: "select",
-        id: "id",
-        name: "name",
-        shortDescription: "shortDescription",
-        active: "active",
-        ean: "ean",
-        price: "price",
-        actions: "actions",
-    };
+    // Columns: DisplayColumns = {
+    //     select: "select",
+    //     id: "id",
+    //     name: "name",
+    //     shortDescription: "shortDescription",
+    //     active: "active",
+    //     ean: "ean",
+    //     price: "price",
+    //     actions: "actions",
+    // };
     selection = new SelectionModel<ProductData>(true, []);
 
     @ViewChild(MatPaginator, { static: true })
@@ -84,6 +85,7 @@ export class EcommerceProductsComponent implements OnInit, OnDestroy {
     private _unsubscribeAll: Subject<any>;
 
     constructor(
+        private appSettingService: AppSettingsService,
         private matDialog: MatDialog,
         private _ecommerceProductsService: EcommerceProductsService,
         private _formBuilder: FormBuilder
@@ -105,7 +107,11 @@ export class EcommerceProductsComponent implements OnInit, OnDestroy {
         this._unsubscribeAll.complete();
     }
     ngOnInit(): void {
-        this.displayColumns = Object.values(this.Columns);
+        this.appSettingService.resolve().subscribe((settings) => {
+            this.displayColumns = settings.searchResultColumns;
+            console.log(this.displayColumns);
+        });
+        // this.displayColumns = Object.values(this.Columns);
 
         this.dataSource = new FilesDataSource(
             this._ecommerceProductsService,

@@ -39,6 +39,7 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
 import { ProductDialogComponent } from "./product-dialog/product-dialog.component";
 import { MatDialogModule } from "@angular/material/dialog";
 import { ProductSaveConfirmationComponent } from "./product-save-confirmation/product-save-confirmation.component";
+import { TypeofPipe } from "./typeofpipe";
 
 const routes: Routes = [
     {
@@ -86,6 +87,7 @@ const routes: Routes = [
         EcommerceOrderComponent,
         ProductDialogComponent,
         ProductSaveConfirmationComponent,
+        TypeofPipe,
     ],
     imports: [
         RouterModule.forChild(routes),

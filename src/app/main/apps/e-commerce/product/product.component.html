@@ -402,7 +402,124 @@
                                     <mat-error>Image is required!</mat-error>
                                 </mat-form-field>
                             </div>
+                            <div fxLayout="row wrap" fxLayoutAlign="start start" class="mb-24">
+                                <!-- <div *ngIf="product.images.length === 0" class="product-image" fxlayout="row" fxLayoutAlign="center center">
+                                    <img class="media" [src]="
+                                            'assets/images/ecommerce/product-image-placeholder.png'
+                                        " />
+                                </div>
 
+                                <div *ngFor="let image of product.images">
+                                    <div *ngIf="product.images.length > 0" class="product-image" fxlayout="row" fxLayoutAlign="center center">
+                                        <img class="media" [src]="image.url" />
+                                    </div>
+                                </div> -->
+                                <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="dropped($event)" (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)" style="
+                                        display: table;
+                                        margin: auto;
+                                        width: 70%;
+                                    ">
+                                    <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector" [showBrowseBtn]="true" style="height: 160px">
+                                        <div fxFlex fxLayout="column" fxLayoutAlign="start start" style="margin-top: 42px">
+                                            <div style="
+                                                    display: table;
+                                                    margin: auto;
+                                                ">
+                                                <mat-icon mat-list-icon>cloud_upload</mat-icon>
+                                            </div>
+                                            <h3 style="
+                                                    display: table;
+                                                    margin: auto;
+                                                ">
+                                                Drag or Drop
+                                            </h3>
+                                            <h3 style="
+                                                    display: table;
+                                                    margin: auto;
+                                                ">
+                                                or
+                                            </h3>
+                                            <button style="
+                                                    display: table;
+                                                    margin: auto;
+                                                " mat-raised-button color="warn" (click)="openFileSelector()">
+                                                Browse Files
+                                            </button>
+                                        </div>
+                                    </ng-template>
+                                </ngx-file-drop>
+                                <div class="upload-table" style="
+                                        display: table;
+                                        margin: auto;
+                                        width: 70%;
+                                    ">
+                                    <!--product images-->
+                                    <mat-list *ngIf="images.length">
+                                        <mat-list-item *ngFor="
+                                                let item of images;
+                                                let i = index
+                                            " style="padding: 0 0">
+                                            <div fxFlex fxLayout="row" fxLayoutAlign="start start" style="
+                                                    width: 100%;
+                                                    border: 1px dotted black;
+                                                ">
+                                                <div style="width: 70px">
+                                                    <mat-icon mat-list-icon class="mr-10" style="font-size: 48px">insert_drive_file</mat-icon>
+                                                </div>
+                                                <div style="width: 100%">
+                                                    <div mat-line>
+                                                        {{ item.relativePath }}
+                                                    </div>
+                                                    <div mat-line>time</div>
+                                                    <div mat-line>
+                                                        <mat-progress-bar mode="determinate" value="100"></mat-progress-bar>
+                                                    </div>
+                                                </div>
+                                                <div style="margin-top: 20px">
+                                                    <mat-icon mat-list-icon (click)="
+                                                            removeFile(item.id)
+                                                        ">delete</mat-icon>
+                                                </div>
+                                            </div>
+                                        </mat-list-item>
+                                    </mat-list>
+                                    <!--product images-->
+                                    <mat-list *ngFor="
+                                            let image of allFiles.length
+                                                ? allFiles
+                                                : []
+                                        ">
+                                        <mat-list-item style="padding: 0 0" *ngIf="!image.isDeleted">
+                                            <div fxFlex fxLayout="row" fxLayoutAlign="start start" style="
+                                                    width: 100%;
+                                                    border: 1px dotted black;
+                                                ">
+                                                <div style="width: 70px">
+                                                    <mat-icon mat-list-icon class="mr-10" style="font-size: 48px">insert_drive_file</mat-icon>
+                                                </div>
+                                                <div style="width: 100%">
+                                                    <div mat-line>
+                                                        {{ image.fileUrl }}
+                                                    </div>
+                                                    <div mat-line>
+                                                        {{ image.fileType }}
+                                                    </div>
+                                                    <div mat-line>
+                                                        <mat-progress-bar mode="determinate" value="100"></mat-progress-bar>
+                                                    </div>
+                                                </div>
+                                                <div style="margin-top: 20px">
+                                                    <mat-icon mat-list-icon (click)="
+                                                            removeFile(
+                                                                image.fileId
+                                                            )
+                                                        ">delete</mat-icon>
+                                                </div>
+                                            </div>
+                                        </mat-list-item>
+                                    </mat-list>
+                                </div>
+                            </div>
                             <div fxLayout="row" fxLayoutAlign="center center">
                                 <button class="mr-8" mat-raised-button matStepperPrevious type="button" color="accent">
                                     Previous

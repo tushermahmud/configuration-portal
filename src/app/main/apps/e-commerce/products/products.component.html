@@ -273,8 +273,7 @@
                         </mat-checkbox>
                     </td>
                 </ng-container>
-                <!-- ID Column -->
-                <ng-container matColumnDef="id">
+                <!-- <ng-container matColumnDef="id">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>ID</mat-header-cell>
                     <mat-cell *matCellDef="let product" [routerLink]="
                             '/apps/e-commerce/products/' +
@@ -286,7 +285,6 @@
                     </mat-cell>
                 </ng-container>
 
-                <!-- Image Column -->
                 <ng-container matColumnDef="name">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
                     <mat-cell *matCellDef="let product" [routerLink]="
@@ -299,7 +297,6 @@
                     </mat-cell>
                 </ng-container>
 
-                <!-- Name Column -->
                 <ng-container matColumnDef="shortDescription">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>Short Description</mat-header-cell>
                     <mat-cell *matCellDef="let product" [routerLink]="
@@ -314,7 +311,6 @@
                     </mat-cell>
                 </ng-container>
 
-                <!-- Category Column -->
                 <ng-container matColumnDef="ean">
                     <mat-header-cell *matHeaderCellDef fxHide mat-sort-header fxShow.gt-md>EAN</mat-header-cell>
                     <mat-cell *matCellDef="let product" fxHide fxShow.gt-md [routerLink]="
@@ -329,7 +325,6 @@
                     </mat-cell>
                 </ng-container>
 
-                <!-- Price Column -->
                 <ng-container matColumnDef="price">
                     <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-xs>Price</mat-header-cell>
                     <mat-cell *matCellDef="let product" fxHide fxShow.gt-xs [routerLink]="
@@ -342,7 +337,7 @@
                             {{ product.price | currency: "USD":"symbol" }}
                         </p>
                     </mat-cell>
-                </ng-container>
+                </ng-container> -->
 
                 <!-- Quantity Column -->
                 <!-- <ng-container matColumnDef="quantity">
@@ -363,7 +358,8 @@
                 </ng-container> -->
 
                 <!-- Active Column -->
-                <ng-container matColumnDef="active">
+
+                <!-- <ng-container matColumnDef="active">
                     <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-xs>Active</mat-header-cell>
                     <mat-cell *matCellDef="let product" fxHide fxShow.gt-xs [routerLink]="
                             '/apps/e-commerce/products/' +
@@ -374,7 +370,51 @@
                         <mat-icon *ngIf="product.active" class="active-icon green-600 s-16">check</mat-icon>
                         <mat-icon *ngIf="!product.active" class="active-icon red-500 s-16" style="background-color: brown; color: #fff">close</mat-icon>
                     </mat-cell>
-                </ng-container>
+                </ng-container> -->
+                <div *ngFor="let column of displayColumns; let i = index">
+                    <div *ngIf="i > 0 && i < displayColumns.length - 1">
+                        <ng-container matColumnDef="{{ column }}">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ column }}</mat-header-cell>
+
+                            <mat-cell *matCellDef="let product" fxHide fxShow.gt-xs>
+                                <p *ngIf="
+                                        (product[column] | typeof) ===
+                                            'boolean';
+                                        else notboolean
+                                    ">
+                                    <mat-icon *ngIf="product[column]" class="active-icon green-600 s-16" [routerLink]="
+                                            '/apps/e-commerce/products/' +
+                                            product.id +
+                                            '/' +
+                                            product.handle
+                                        ">check
+                                    </mat-icon>
+                                    <mat-icon *ngIf="!product[column]" class="active-icon red-500 s-16" style="
+                                            background-color: brown;
+                                            color: #fff;
+                                        " [routerLink]="
+                                            '/apps/e-commerce/products/' +
+                                            product.id +
+                                            '/' +
+                                            product.handle
+                                        ">
+                                        close
+                                    </mat-icon>
+                                </p>
+                                <ng-template #notboolean>
+                                    <p class="text-truncate" [routerLink]="
+                                            '/apps/e-commerce/products/' +
+                                            product.id +
+                                            '/' +
+                                            product.handle
+                                        ">
+                                        {{ product[column] }}
+                                    </p>
+                                </ng-template>
+                            </mat-cell>
+                        </ng-container>
+                    </div>
+                </div>
                 <ng-container matColumnDef="actions">
                     <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-xs>Actions</mat-header-cell>
                     <mat-cell *matCellDef="let product" fxHide fxShow.gt-xs>

@@ -53,6 +53,7 @@ export class EcommerceProductComponent implements OnInit, OnDestroy {
     public images: NgxFileDropEntry[] = [];
     deletedImages: any[] = [];
     allFiles: any[] = [];
+    allSaveFiles: File[] = [];
     // Private
     private _unsubscribeAll: Subject<any>;
     categoriess: string[] = [
@@ -186,7 +187,8 @@ export class EcommerceProductComponent implements OnInit, OnDestroy {
                 const fileEntry = droppedFile.fileEntry as FileSystemFileEntry;
                 fileEntry.file((file: File) => {
                     // Here you can access the real file
-                    console.log(droppedFile.relativePath, file);
+                    this.allSaveFiles.push(file);
+                    console.log(file);
 
                     /**
               // You could upload it like this:
@@ -255,6 +257,7 @@ export class EcommerceProductComponent implements OnInit, OnDestroy {
             active: step1.active,
             productUrl: step1.productUrl,
             productName: step1.productName,
+            allDroppedImages: this.allSaveFiles,
         });
 
         // this.allFormData = [...step1, ...step2, ...step3, ...step4, ...step5];
@@ -271,6 +274,8 @@ export class EcommerceProductComponent implements OnInit, OnDestroy {
         }).then((result) => {
             /* Read more about isConfirmed, isDenied below */
             if (result.isConfirmed) {
+                console.log(allFormData);
+                this.allSaveFiles = [];
                 Swal.fire("Saved!", "", "success");
             } else if (result.isDenied) {
                 Swal.fire("Changes are not saved", "", "info");
