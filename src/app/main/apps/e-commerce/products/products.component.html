@@ -63,8 +63,7 @@
                         <h3>Title</h3>
                         <mat-form-field appearance="outline" fxFlex="97" class="pr-4">
                             <mat-label>Title</mat-label>
-                            <input matInput formControlName="title" placeholder="Title" required />
-                            <mat-error>Title is required!</mat-error>
+                            <input matInput formControlName="title" placeholder="Title" />
                         </mat-form-field>
                         <mat-form-field appearance="outline" fxFlex="50">
                             <mat-label>Dropdown</mat-label>
@@ -95,8 +94,7 @@
 
                         <mat-form-field appearance="outline" fxFlex="100" class="pr-4">
                             <mat-label>Ean</mat-label>
-                            <input matInput formControlName="ean" placeholder="EAN" required />
-                            <mat-error>EAN is required!</mat-error>
+                            <input matInput formControlName="ean" placeholder="EAN" />
                         </mat-form-field>
                         <mat-form-field appearance="outline" fxFlex="50">
                             <mat-label>Dropdown</mat-label>
@@ -229,30 +227,6 @@
                         </mat-form-field>
                     </div>
 
-                    <!-- <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
-                        <mat-form-field appearance="outline" fxFlex="33">
-                            <mat-label>City</mat-label>
-                            <input matInput formControlName="city" required />
-                            <mat-icon matSuffix class="secondary-text">location_city</mat-icon>
-                            <mat-error>City is required!</mat-error>
-                        </mat-form-field>
-
-                        <mat-form-field appearance="outline" fxFlex="34" class="px-8">
-                            <mat-label>State</mat-label>
-                            <input matInput formControlName="state" required />
-                            <mat-icon matSuffix class="secondary-text">location_city</mat-icon>
-                            <mat-error>State is required!</mat-error>
-                        </mat-form-field>
-
-                        <mat-form-field appearance="outline" fxFlex="33">
-                            <mat-label>Postal Code</mat-label>
-                            <input matInput #postalCode value="94043" formControlName="postalCode" maxlength="5" required />
-                            <mat-icon matSuffix class="secondary-text">markunread_mailbox</mat-icon>
-                            <mat-hint align="end">{{ postalCode.value.length }} / 5</mat-hint>
-                            <mat-error>Postal Code is required!</mat-error>
-                        </mat-form-field>
-                    </div> -->
-
                     <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
                         <button mat-raised-button color="primary" (click)="submitSearchData()">
                             Search
@@ -273,104 +247,6 @@
                         </mat-checkbox>
                     </td>
                 </ng-container>
-                <!-- <ng-container matColumnDef="id">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>ID</mat-header-cell>
-                    <mat-cell *matCellDef="let product" [routerLink]="
-                            '/apps/e-commerce/products/' +
-                            product.id +
-                            '/' +
-                            product.handle
-                        ">
-                        <p class="text-truncate">{{ product.id }}</p>
-                    </mat-cell>
-                </ng-container>
-
-                <ng-container matColumnDef="name">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
-                    <mat-cell *matCellDef="let product" [routerLink]="
-                            '/apps/e-commerce/products/' +
-                            product.id +
-                            '/' +
-                            product.handle
-                        ">
-                        <p class="text-truncate">{{ product.productName }}</p>
-                    </mat-cell>
-                </ng-container>
-
-                <ng-container matColumnDef="shortDescription">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>Short Description</mat-header-cell>
-                    <mat-cell *matCellDef="let product" [routerLink]="
-                            '/apps/e-commerce/products/' +
-                            product.id +
-                            '/' +
-                            product.handle
-                        ">
-                        <p class="text-truncate">
-                            {{ product.shortDescription }}
-                        </p>
-                    </mat-cell>
-                </ng-container>
-
-                <ng-container matColumnDef="ean">
-                    <mat-header-cell *matHeaderCellDef fxHide mat-sort-header fxShow.gt-md>EAN</mat-header-cell>
-                    <mat-cell *matCellDef="let product" fxHide fxShow.gt-md [routerLink]="
-                            '/apps/e-commerce/products/' +
-                            product.id +
-                            '/' +
-                            product.handle
-                        ">
-                        <p class="category text-truncate">
-                            {{ product.ean }}
-                        </p>
-                    </mat-cell>
-                </ng-container>
-
-                <ng-container matColumnDef="price">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-xs>Price</mat-header-cell>
-                    <mat-cell *matCellDef="let product" fxHide fxShow.gt-xs [routerLink]="
-                            '/apps/e-commerce/products/' +
-                            product.id +
-                            '/' +
-                            product.handle
-                        ">
-                        <p class="price text-truncate">
-                            {{ product.price | currency: "USD":"symbol" }}
-                        </p>
-                    </mat-cell>
-                </ng-container> -->
-
-                <!-- Quantity Column -->
-                <!-- <ng-container matColumnDef="quantity">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm>Quantity</mat-header-cell>
-                    <mat-cell *matCellDef="let product" fxHide fxShow.gt-sm>
-                        <span class="quantity-indicator text-truncate" [ngClass]="{
-                                'red-500': product.quantity <= 5,
-                                'amber-500':
-                                    product.quantity > 5 &&
-                                    product.quantity <= 25,
-                                'green-600': product.quantity > 25
-                            }">
-                        </span>
-                        <span>
-                            {{ product.quantity }}
-                        </span>
-                    </mat-cell>
-                </ng-container> -->
-
-                <!-- Active Column -->
-
-                <!-- <ng-container matColumnDef="active">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-xs>Active</mat-header-cell>
-                    <mat-cell *matCellDef="let product" fxHide fxShow.gt-xs [routerLink]="
-                            '/apps/e-commerce/products/' +
-                            product.id +
-                            '/' +
-                            product.handle
-                        ">
-                        <mat-icon *ngIf="product.active" class="active-icon green-600 s-16">check</mat-icon>
-                        <mat-icon *ngIf="!product.active" class="active-icon red-500 s-16" style="background-color: brown; color: #fff">close</mat-icon>
-                    </mat-cell>
-                </ng-container> -->
                 <div *ngFor="let column of displayColumns; let i = index">
                     <div *ngIf="i > 0 && i < displayColumns.length - 1">
                         <ng-container matColumnDef="{{ column }}">
