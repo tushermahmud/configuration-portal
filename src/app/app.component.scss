@@ -1,13 +1,15 @@
 @import "src/@fuse/scss/fuse";
-
 :host {
+    body.theme-default .accent,
+    body.theme-default .accent-bg {
+        background-color: #eb7f56 !important;
+    }
     position: relative;
     display: flex;
     flex: 1 1 auto;
     width: 100%;
     height: 100%;
     min-width: 0;
-
     .theme-options-button {
         position: absolute;
         top: 160px;
@@ -20,29 +22,23 @@
         border-radius: 0;
         margin: 0;
         pointer-events: auto;
-        opacity: .90;
+        opacity: 0.9;
         z-index: 998;
-
         &.right-side-panel {
-
-            @include media-breakpoint('gt-md') {
+            @include media-breakpoint("gt-md") {
                 right: 70px;
             }
         }
-
         &.side-panel-hidden {
             right: 0 !important;
         }
-
         mat-icon {
             animation: rotating 3s linear infinite;
         }
-
         &:hover {
             opacity: 1;
         }
     }
-
     .theme-options-sidebar {
         width: 360px;
         min-width: 360px;
