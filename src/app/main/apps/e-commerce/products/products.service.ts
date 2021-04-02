@@ -51,9 +51,13 @@ export class EcommerceProductsService implements Resolve<any> {
                 .get<ProductData[]>("api/e-commerce-products")
                 .subscribe((response: any) => {
                     this.products = response;
+                    console.log(this.products);
                     this.onProductsChanged.next(this.products);
                     resolve(response);
                 }, reject);
         });
+    }
+    getVariantProducts(): Observable<ProductData[]> {
+        return this._httpClient.get<ProductData[]>("api/e-commerce-products");
     }
 }

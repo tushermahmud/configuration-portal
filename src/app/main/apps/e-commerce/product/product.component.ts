@@ -1,11 +1,29 @@
+import { EcommerceProductsService } from "app/main/apps/e-commerce/products/products.service";
 import { MatDialog } from "@angular/material/dialog";
-import { Component, OnDestroy, OnInit, ViewEncapsulation } from "@angular/core";
+import {
+    Component,
+    ElementRef,
+    OnDestroy,
+    OnInit,
+    ViewChild,
+    AfterViewInit,
+    ViewEncapsulation,
+    ViewChildren,
+} from "@angular/core";
+import { DataSource } from "@angular/cdk/collections";
+import { BehaviorSubject, fromEvent, merge, Observable } from "rxjs";
+import { debounceTime, distinctUntilChanged, map } from "rxjs/operators";
 import {
     FormBuilder,
     FormGroup,
     Validators,
     FormControl,
+    FormArray,
 } from "@angular/forms";
+import "rxjs/add/operator/debounceTime";
+
+import { MatPaginator } from "@angular/material/paginator";
+import { MatSort } from "@angular/material/sort";
 import { Location } from "@angular/common";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { Subject } from "rxjs";
@@ -15,6 +33,7 @@ import { MatCalendarCellClassFunction } from "@angular/material/datepicker";
 import { fuseAnimations } from "@fuse/animations";
 import { FuseUtils } from "@fuse/utils";
 import { ProductData } from "./../configuration-files/ProductData.model";
+import { COMMA, ENTER } from "@angular/cdk/keycodes";
 
 import { EcommerceProductService } from "app/main/apps/e-commerce/product/product.service";
 import { MatChipInputEvent } from "@angular/material/chips";
@@ -26,6 +45,8 @@ import {
 import Swal from "sweetalert2";
 
 import { ProductSaveConfirmationComponent } from "../product-save-confirmation/product-save-confirmation.component";
+import { AppSettingsService } from "../configuration-files/AppSettingsService";
+import { AppsSettingsService } from "../configuration-files/AppsSettingsService";
 export class DatepickerDateClassExample {
     dateClass: MatCalendarCellClassFunction<Date> = (cellDate, view) => {
         // Only highligh dates inside the month view.
@@ -46,15 +67,20 @@ export class DatepickerDateClassExample {
     encapsulation: ViewEncapsulation.None,
     animations: fuseAnimations,
 })
-export class EcommerceProductComponent implements OnInit, OnDestroy {
-    product: ProductData;
+export class EcommerceProductComponent
+    implements OnInit, OnDestroy, AfterViewInit {
+    singleProduct: ProductData;
     pageType: string;
     productForm: FormGroup;
     public images: NgxFileDropEntry[] = [];
     deletedImages: any[] = [];
     allFiles: any[] = [];
     allSaveFiles: File[] = [];
+    nameSearch: string = "";
+    variants: ProductData[] = [];
     // Private
+    filteredProduct: ProductData[];
+    // filter: ElementRef;
     private _unsubscribeAll: Subject<any>;
     categoriess: string[] = [
         "Extra cheese",
@@ -64,6 +90,13 @@ export class EcommerceProductComponent implements OnInit, OnDestroy {
         "Sausage",
         "Tomato",
     ];
+    visible = true;
+    selectable = true;
+    removable = true;
+    addOnBlur = true;
+    displayColumns: any[];
+    products: ProductData[] = [];
+    readonly separatorKeysCodes: number[] = [ENTER, COMMA];
     /**
      * Constructor
      *
@@ -78,8 +111,16 @@ export class EcommerceProductComponent implements OnInit, OnDestroy {
     verticalStepperStep3: FormGroup;
     verticalStepperStep4: FormGroup;
     verticalStepperStep5: FormGroup;
+    verticalStepperStep6: FormGroup;
+    @ViewChild(MatPaginator, { static: true })
+    paginator: MatPaginator;
+    @ViewChild(MatSort, { static: true })
+    sort: MatSort;
     allFormData = {};
     constructor(
+        private appsSettingService: AppsSettingsService,
+        private appSettingService: AppSettingsService,
+        private _ecommerceProductsService: EcommerceProductsService,
         private _ecommerceProductService: EcommerceProductService,
         private _formBuilder: FormBuilder,
         private _location: Location,
@@ -87,7 +128,7 @@ export class EcommerceProductComponent implements OnInit, OnDestroy {
         private matDialog: MatDialog
     ) {
         // Set the default
-        this.product = new ProductData();
+        this.singleProduct = new ProductData();
 
         // Set the private defaults
         this._unsubscribeAll = new Subject();
@@ -101,13 +142,21 @@ export class EcommerceProductComponent implements OnInit, OnDestroy {
      * On init
      */
     ngOnInit(): void {
-        // Subscribe to update product on changes
+        this.appsSettingService.resolve().subscribe((settings) => {
+            this.displayColumns = settings.searchResultColumns;
+        });
+
+        this._ecommerceProductsService
+            .getVariantProducts()
+            .subscribe((products) => {
+                this.products = products;
+            });
         this._ecommerceProductService.onProductChanged
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((product) => {
                 if (product) {
                     console.log(product);
-                    this.product = new ProductData(product);
+                    this.singleProduct = new ProductData(product);
                     this.pageType = "edit";
                     product.images.map((file) => {
                         this.allFiles.push({
@@ -130,7 +179,7 @@ export class EcommerceProductComponent implements OnInit, OnDestroy {
                     // );
                 } else {
                     this.pageType = "new";
-                    this.product = new ProductData();
+                    this.singleProduct = new ProductData();
                     this.verticalStepperStep1 = this._formBuilder.group({
                         productName: ["", Validators.required],
                         productUrl: ["", Validators.required],
@@ -141,6 +190,8 @@ export class EcommerceProductComponent implements OnInit, OnDestroy {
                     this.verticalStepperStep2 = this._formBuilder.group({
                         description: ["", Validators.required],
                         shortDescription: ["", Validators.required],
+                        brand: ["", Validators.required],
+                        keywords: [[]],
                     });
 
                     this.verticalStepperStep3 = this._formBuilder.group({
@@ -152,15 +203,58 @@ export class EcommerceProductComponent implements OnInit, OnDestroy {
                     this.verticalStepperStep5 = this._formBuilder.group({
                         categories: [""],
                     });
+                    this.verticalStepperStep6 = this._formBuilder.group({
+                        search: [""],
+                    });
                 }
 
                 this.productForm = this.createProductForm();
+                if (this.pageType != "edit") {
+                    this.verticalStepperStep6
+                        .get("search")
+                        .valueChanges.debounceTime(500)
+                        .subscribe((val: any) => {
+                            const searchTerm = val.trim();
+                            if (searchTerm === "") {
+                                this.filteredProduct = [];
+                            } else {
+                                this.filteredProduct = this.products.filter(
+                                    (search) =>
+                                        search.productName
+                                            .toLowerCase()
+                                            .indexOf(searchTerm) > -1
+                                );
+                            }
+
+                            // this.openFilteredProduct(this.filteredProduct);
+                        });
+                } else {
+                    this.productForm
+                        .get("search")
+                        .valueChanges.debounceTime(500)
+                        .subscribe((val: any) => {
+                            const searchTerm = val.trim();
+                            if (searchTerm === "") {
+                                this.filteredProduct = [];
+                            } else {
+                                this.filteredProduct = this.products.filter(
+                                    (search) =>
+                                        search.productName
+                                            .toLowerCase()
+                                            .indexOf(searchTerm) > -1
+                                );
+                            }
+
+                            // this.openFilteredProduct(this.filteredProduct);
+                        });
+                }
             });
     }
 
     /**
      * On destroy
      */
+    ngAfterViewInit(): void {}
     ngOnDestroy(): void {
         // Unsubscribe from all subscriptions
         this._unsubscribeAll.next();
@@ -168,6 +262,51 @@ export class EcommerceProductComponent implements OnInit, OnDestroy {
     }
     goToBack() {
         this._location.back();
+    }
+
+    get keywordControls(): FormArray {
+        return this.verticalStepperStep2.controls["keywords"] as FormArray;
+    }
+    addToVariant(product) {
+        this.variants.push(product);
+        this.filteredProduct.splice(
+            this.filteredProduct.findIndex(
+                (products) => products.id === product.id
+            ),
+            1
+        );
+        console.log(this.variants);
+    }
+    removeVariant(product) {
+        this.filteredProduct.unshift(product);
+        this.variants.splice(
+            this.variants.findIndex((products) => products.id === product.id),
+            1
+        );
+        console.log(this.variants);
+    }
+
+    add(event: MatChipInputEvent): void {
+        const input = event.input;
+        const value = event.value;
+        // Add our fruit
+        if ((value || "").trim()) {
+            this.keywordControls.value.push(value);
+        }
+
+        // Reset the input value
+        if (input) {
+            input.value = "";
+        }
+    }
+
+    remove(fruit: string): void {
+        const index = this.keywordControls.value.indexOf(fruit);
+        console.log(this.keywordControls.value);
+        if (index >= 0) {
+            this.keywordControls.value.splice(index, 1);
+        }
+        console.log(this.keywordControls.value);
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -188,23 +327,6 @@ export class EcommerceProductComponent implements OnInit, OnDestroy {
                 fileEntry.file((file: File) => {
                     // Here you can access the real file
                     this.allSaveFiles.push(file);
-                    console.log(file);
-
-                    /**
-              // You could upload it like this:
-              const formData = new FormData()
-              formData.append('logo', file, relativePath)
-    
-              // Headers
-              const headers = new HttpHeaders({
-                'security-token': 'mytoken'
-              })
-    
-              this.http.post('https://mybackend.com/api/upload/sanitize-and-save-logo', formData, { headers: headers, responseType: 'blob' })
-              .subscribe(data => {
-                // Sanitized logo returned from backend
-              })
-              **/
                 });
             } else {
                 // It was a directory (empty directories are added, otherwise only files)
@@ -225,20 +347,21 @@ export class EcommerceProductComponent implements OnInit, OnDestroy {
     }
     createProductForm(): FormGroup {
         return this._formBuilder.group({
-            id: [this.product.id],
-            productName: [this.product.productName],
-            description: [this.product.description],
+            id: [this.singleProduct.id],
+            productName: [this.singleProduct.productName],
+            description: [this.singleProduct.description],
             categories: [this.categoriess],
-            keywords: [this.product.keywords],
-            shortDescription: [this.product.shortDescription],
-            images: [this.product.images],
-            price: [this.product.price],
-            ean: [this.product.ean],
-            productUrl: [this.product.productUrl],
-            active: [this.product.active],
-            brand: [this.product.brand],
-            creationDate: [this.product.creationDate],
-            updateDate: [this.product.updateDate],
+            keywords: [this.singleProduct.keywords],
+            shortDescription: [this.singleProduct.shortDescription],
+            images: [this.singleProduct.images],
+            price: [this.singleProduct.price],
+            ean: [this.singleProduct.ean],
+            productUrl: [this.singleProduct.productUrl],
+            active: [this.singleProduct.active],
+            brand: [this.singleProduct.brand],
+            creationDate: [this.singleProduct.creationDate],
+            updateDate: [this.singleProduct.updateDate],
+            search: [""],
         });
     }
     finishVerticalStepper() {
@@ -247,6 +370,9 @@ export class EcommerceProductComponent implements OnInit, OnDestroy {
         const step3 = this.verticalStepperStep3.getRawValue();
         const step4 = this.verticalStepperStep4.getRawValue();
         const step5 = this.verticalStepperStep5.getRawValue();
+        const step6 = this.verticalStepperStep6.getRawValue();
+
+        console.log(step2);
         Object.assign(this.allFormData, {
             categories: step5.categories,
             images: step4.images,
@@ -258,6 +384,9 @@ export class EcommerceProductComponent implements OnInit, OnDestroy {
             productUrl: step1.productUrl,
             productName: step1.productName,
             allDroppedImages: this.allSaveFiles,
+            keywords: step2.keywords,
+            brand: step2.brand,
+            variants: this.variants,
         });
 
         // this.allFormData = [...step1, ...step2, ...step3, ...step4, ...step5];
@@ -300,21 +429,36 @@ export class EcommerceProductComponent implements OnInit, OnDestroy {
             });
         });
     }
-    openSaveProduct(allFormData: {}) {
-        console.log("tusher");
+    openFilteredProduct(allFilteredData: ProductData[]) {
+        console.log(allFilteredData);
         // console.log(ids);
         const deleteDialog = this.matDialog.open(
             ProductSaveConfirmationComponent,
             {
                 disableClose: true,
                 data: {
-                    data: allFormData,
+                    data: allFilteredData,
                     width: "300px",
                     height: "400px",
                 },
             }
         );
     }
+    // openSaveProduct(allFormData: {}) {
+    //     console.log("tusher");
+    //     // console.log(ids);
+    //     const deleteDialog = this.matDialog.open(
+    //         ProductSaveConfirmationComponent,
+    //         {
+    //             disableClose: true,
+    //             data: {
+    //                 data: allFormData,
+    //                 width: "300px",
+    //                 height: "400px",
+    //             },
+    //         }
+    //     );
+    // }
 
     /**
      * Add product
@@ -336,9 +480,9 @@ export class EcommerceProductComponent implements OnInit, OnDestroy {
             //Change the location with new one
             this._location.go(
                 "apps/e-commerce/products/" +
-                    this.product.id +
+                    this.singleProduct.id +
                     "/" +
-                    this.product.handle
+                    this.singleProduct.handle
             );
         });
     }
@@ -381,137 +525,3 @@ export class EcommerceProductComponent implements OnInit, OnDestroy {
         console.log(event);
     }
 }
-
-// export class EcommerceProductComponent implements OnInit, OnDestroy {
-//     product: ProductData;
-//     pageType: string;
-//     productForm: FormGroup;
-
-//     // Private
-//     private _unsubscribeAll: Subject<any>;
-
-//     /**
-//      * Constructor
-//      *
-//      * @param {EcommerceProductService} _ecommerceProductService
-//      * @param {FormBuilder} _formBuilder
-//      * @param {Location} _location
-//      * @param {MatSnackBar} _matSnackBar
-//      */
-//     constructor(
-//         private _ecommerceProductService: EcommerceProductService,
-//         private _formBuilder: FormBuilder,
-//         private _location: Location,
-//         private _matSnackBar: MatSnackBar
-//     ) {
-//         // Set the default
-//         this.product = new ProductData();
-
-//         // Set the private defaults
-//         this._unsubscribeAll = new Subject();
-//     }
-
-//     // -----------------------------------------------------------------------------------------------------
-//     // @ Lifecycle hooks
-//     // -----------------------------------------------------------------------------------------------------
-
-//     /**
-//      * On init
-//      */
-//     ngOnInit(): void {
-//         // Subscribe to update product on changes
-//         this._ecommerceProductService.onProductChanged
-//             .pipe(takeUntil(this._unsubscribeAll))
-//             .subscribe((product) => {
-//                 console.log(product);
-//                 if (product) {
-//                     console.log(product);
-//                     this.pageType = "edit";
-//                     console.log(product);
-//                 } else {
-//                     this.pageType = "new";
-//                     this.product = new ProductData();
-//                 }
-
-//                 this.productForm = this.createProductForm();
-//             });
-//     }
-
-//     /**
-//      * On destroy
-//      */
-//     ngOnDestroy(): void {
-//         // Unsubscribe from all subscriptions
-//         this._unsubscribeAll.next();
-//         this._unsubscribeAll.complete();
-//     }
-
-//     // -----------------------------------------------------------------------------------------------------
-//     // @ Public methods
-//     // -----------------------------------------------------------------------------------------------------
-
-//     /**
-//      * Create product form
-//      *
-//      * @returns {FormGroup}
-//      */
-//     createProductForm(): FormGroup {
-//         return this._formBuilder.group({
-//             id: [this.product.productId],
-//             name: [this.product.productName],
-//             description: [this.product.description],
-//             categories: [this.product.categories],
-//             shortDescription: [this.product.shortDescription],
-//             images: [this.product.images],
-//             price: [this.product.price],
-//             ean: [this.product.ean],
-//             active: [this.product.active],
-//             brand: [this.product.brand],
-//             creationDate: [this.product.creationDate],
-//             updateDate: [this.product.updateDate],
-//         });
-//     }
-
-//     /**
-//      * Save product
-//      */
-//     saveProduct(): void {
-//         const data = this.productForm.getRawValue();
-//         data.handle = FuseUtils.handleize(data.name);
-
-//         this._ecommerceProductService.saveProduct(data).then(() => {
-//             // Trigger the subscription with new data
-//             this._ecommerceProductService.onProductChanged.next(data);
-
-//             // Show the success message
-//             this._matSnackBar.open("Product saved", "OK", {
-//                 verticalPosition: "top",
-//                 duration: 2000,
-//             });
-//         });
-//     }
-
-//     /**
-//      * Add product
-//      */
-//     addProduct(): void {
-//         const data = this.productForm.getRawValue();
-//         data.handle = FuseUtils.handleize(data.name);
-
-//         this._ecommerceProductService.addProduct(data).then(() => {
-//             // Trigger the subscription with new data
-//             this._ecommerceProductService.onProductChanged.next(data);
-
-//             // Show the success message
-//             this._matSnackBar.open("Product added", "OK", {
-//                 verticalPosition: "top",
-//                 duration: 2000,
-//             });
-
-//             // Change the location with new one
-//             this._location.go(
-//                 "apps/e-commerce/products/" + this.product.productId
-//             );
-//         });
-//     }
-// }

@@ -49,31 +49,12 @@ export class EcommerceProductsComponent implements OnInit, OnDestroy {
     isActive: boolean = false;
 
     dataSource: FilesDataSource | null;
-    // productDataInfo: ProductData = {
-    //     productName: "Product Name",
-    //     description: "Description",
-    //     shortDescription: "Short Description",
-    //     price: "Price",
-    //     ean: "EAN",
-    //     brand: "Brand",
-    //     // creationDate: "Created Date",
-    //     // updateDate: Date;
-    // };
-    // Columns: DisplayColumns = {
-    //     select: "select",
-    //     id: "id",
-    //     name: "name",
-    //     shortDescription: "shortDescription",
-    //     active: "active",
-    //     ean: "ean",
-    //     price: "price",
-    //     actions: "actions",
-    // };
+
     selection = new SelectionModel<ProductData>(true, []);
+    public isShowing = false;
 
     @ViewChild(MatPaginator, { static: true })
     paginator: MatPaginator;
-    public isShowing = false;
     @ViewChild(MatSort, { static: true })
     sort: MatSort;
 
@@ -112,7 +93,8 @@ export class EcommerceProductsComponent implements OnInit, OnDestroy {
             console.log(this.displayColumns);
         });
         // this.displayColumns = Object.values(this.Columns);
-
+        console.log(this._ecommerceProductsService);
+        console.log(this.paginator);
         this.dataSource = new FilesDataSource(
             this._ecommerceProductsService,
             this.paginator,
@@ -131,6 +113,7 @@ export class EcommerceProductsComponent implements OnInit, OnDestroy {
                 }
 
                 this.dataSource.filter = this.filter.nativeElement.value;
+                console.log(this.dataSource);
             });
         // Reactive Form
         this.form = this._formBuilder.group({

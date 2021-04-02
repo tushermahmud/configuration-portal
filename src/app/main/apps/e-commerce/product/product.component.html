@@ -9,8 +9,8 @@
                     value: '*',
                     params: { delay: '50ms', scale: '0.2' }
                 }">
-                <img *ngIf="product.images[0]" [src]="product.images[0].url" />
-                <img *ngIf="!product.images[0]" [src]="
+                <img *ngIf="singleProduct.images[0]" [src]="singleProduct.images[0].url" />
+                <img *ngIf="!singleProduct.images[0]" [src]="
                         'assets/images/ecommerce/product-image-placeholder.png'
                     " />
             </div>
@@ -20,7 +20,7 @@
                     params: { delay: '100ms', x: '-25px' }
                 }">
                 <div class="h2" *ngIf="pageType === 'edit'">
-                    {{ product.name }}
+                    {{ singleProduct.name }}
                 </div>
                 <div class="h2" *ngIf="pageType === 'new'">New Product</div>
                 <div class="subtitle secondary-text">
@@ -40,7 +40,7 @@
     <div class="center" fxLayout="row" fxLayoutAlign="start start" *ngIf="pageType === 'edit'">
         <fuse-sidebar class="sidebar" name="simple-left-sidebar-1" position="left" lockedOpen="gt-md" fxFlex="30" fxFill>
             <div class="content p-24">
-                <fuse-demo-sidebar [product]="product"></fuse-demo-sidebar>
+                <fuse-demo-sidebar [product]="singleProduct"></fuse-demo-sidebar>
             </div>
         </fuse-sidebar>
 
@@ -88,16 +88,20 @@
 
                                     <mat-chip-list #categoryList name="categories" formControlName="categories">
                                         <mat-chip *ngFor="
-                                                let category of product.categories
+                                                let category of singleProduct.categories
                                             " [removable]="true" (removed)="
-                                                product.removeCategory(category)
+                                                singleProduct.removeCategory(
+                                                    category
+                                                )
                                             ">
                                             {{ category }}
                                             <mat-icon matChipRemove>cancel</mat-icon>
                                         </mat-chip>
 
                                         <input [matChipInputFor]="categoryList" [matChipInputAddOnBlur]="true" (matChipInputTokenEnd)="
-                                                product.addCategory($event)
+                                                singleProduct.addCategory(
+                                                    $event
+                                                )
                                             " />
                                     </mat-chip-list>
                                 </mat-form-field>
@@ -121,26 +125,34 @@
                                         <mat-label>Brand</mat-label>
                                         <input matInput placeholder="Brand" name="brand" formControlName="brand" />
                                     </mat-form-field>
-                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
-                                        <mat-label>Keywords</mat-label>
+                                    <div fxLayout="row wrap" fxLayoutAlign="start start">
+                                        <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                            <mat-label>Keywords</mat-label>
 
-                                        <mat-chip-list #keywordList name="keywords" formControlName="keywords">
-                                            <mat-chip *ngFor="
-                                                    let keyword of product.keywords
-                                                " [removable]="true" (removed)="
-                                                    product.removeKeyword(
-                                                        keyword
-                                                    )
-                                                ">
-                                                {{ keyword }}
-                                                <mat-icon matChipRemove>cancel</mat-icon>
-                                            </mat-chip>
+                                            <mat-chip-list #keywordList name="keywords" formControlName="keywords">
+                                                <mat-chip *ngFor="
+                                                        let keyword of singleProduct.keywords
+                                                    " [removable]="true" (removed)="
+                                                        singleProduct.removeKeyword(
+                                                            keyword
+                                                        )
+                                                    ">
+                                                    {{ keyword }}
+                                                    <mat-icon matChipRemove>cancel</mat-icon>
+                                                </mat-chip>
 
-                                            <input [matChipInputFor]="keywordList" [matChipInputAddOnBlur]="true" (matChipInputTokenEnd)="
-                                                    product.addKeyword($event)
-                                                " />
-                                        </mat-chip-list>
-                                    </mat-form-field>
+                                                <input [matChipInputFor]="
+                                                        keywordList
+                                                    " [matChipInputAddOnBlur]="
+                                                        true
+                                                    " (matChipInputTokenEnd)="
+                                                        singleProduct.addKeyword(
+                                                            $event
+                                                        )
+                                                    " />
+                                            </mat-chip-list>
+                                        </mat-form-field>
+                                    </div>
                                 </div>
                             </div>
                         </mat-tab>
@@ -291,6 +303,46 @@
                                 </mat-form-field>
                             </div>
                         </mat-tab>
+                        <mat-tab label="Variants">
+                            <ng-template matStepLabel>Variants</ng-template>
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <div fxLayout="column" fxFlex="100">
+                                    <mat-form-field appearance="outline" fxFlex="100">
+                                        <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center" style="position: relative">
+                                            <input matInput formControlName="search" type="text" placeholder="search" />
+                                        </div>
+                                    </mat-form-field>
+                                    <ng-template matStepLabel>Variants</ng-template>
+                                    <mat-card *ngFor="let variant of variants">
+                                        <mat-card-header>
+                                            <mat-card-title fxFlex fxLayout="row" fxLayoutAlign="space-between">
+                                                <span>{{
+                                                    variant.productName
+                                                }}</span>
+                                                <button mat-icon-button (click)="
+                                                        removeVariant(variant)
+                                                    ">
+                                                    <mat-icon>cancel</mat-icon>
+                                                </button>
+                                            </mat-card-title>
+                                        </mat-card-header>
+                                    </mat-card>
+                                    <div class="filteredData mb-20" fxFlex="1 0 auto" fxLayout="column">
+                                        <mat-card *ngFor="
+                                                let product of filteredProduct
+                                            " (click)="addToVariant(product)">
+                                            <mat-card-header>
+                                                <mat-card-title fxFlex fxLayout="row" fxLayoutAlign="space-between">
+                                                    <span>{{
+                                                        product.productName
+                                                    }}</span>
+                                                </mat-card-title>
+                                            </mat-card-header>
+                                        </mat-card>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-tab>
                     </mat-tab-group>
                 </form>
             </div>
@@ -358,6 +410,28 @@
                                     </mat-error>
                                 </mat-form-field>
                             </div>
+                            <div fxFlex="1 0 auto" fxLayout="row">
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Brand</mat-label>
+                                    <input matInput placeholder="Brand" name="brand" formControlName="brand" />
+                                </mat-form-field>
+                            </div>
+                            <div fxFlex="1 0 auto" fxLayout="row">
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-chip-list #chipList aria-label="Fruit selection" formArrayName="keywords">
+                                        <mat-chip *ngFor="
+                                                let fruit of keywordControls.value
+                                            " [selectable]="selectable" [removable]="removable" (removed)="remove(fruit)">
+                                            {{ fruit }}
+                                            <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                                        </mat-chip>
+                                        <input placeholder="New fruit..." [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="
+                                                separatorKeysCodes
+                                            " [matChipInputAddOnBlur]="addOnBlur" (matChipInputTokenEnd)="add($event)" />
+                                    </mat-chip-list>
+                                </mat-form-field>
+                            </div>
+
                             <div fxLayout="row" fxLayoutAlign="center center">
                                 <button class="mr-8" mat-raised-button matStepperPrevious type="button" color="accent">
                                     Previous
@@ -554,7 +628,50 @@
                             </div>
                         </form>
                     </mat-step>
+                    <mat-step [stepControl]="verticalStepperStep6">
+                        <form fxLayout="column" [formGroup]="verticalStepperStep6">
+                            <ng-template matStepLabel>Variants</ng-template>
 
+                            <mat-form-field appearance="outline" fxFlex="100">
+                                <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center" style="position: relative">
+                                    <input matInput formControlName="search" type="text" placeholder="search" />
+                                </div>
+                            </mat-form-field>
+                            <ng-template matStepLabel>Variants</ng-template>
+                            <mat-card *ngFor="let variant of variants">
+                                <mat-card-header>
+                                    <mat-card-title fxFlex fxLayout="row" fxLayoutAlign="space-between">
+                                        <span>{{ variant.productName }}</span>
+                                        <button mat-icon-button (click)="removeVariant(variant)">
+                                            <mat-icon>cancel</mat-icon>
+                                        </button>
+                                    </mat-card-title>
+                                </mat-card-header>
+                            </mat-card>
+                            <div class="filteredData mb-20" fxFlex="1 0 auto" fxLayout="column">
+                                <mat-card *ngFor="let product of filteredProduct" (click)="addToVariant(product)">
+                                    <mat-card-header>
+                                        <mat-card-title fxFlex fxLayout="row" fxLayoutAlign="space-between">
+                                            <span>{{
+                                                product.productName
+                                            }}</span>
+                                        </mat-card-title>
+                                    </mat-card-header>
+                                </mat-card>
+                            </div>
+
+                            <div fxFlex="1 0 auto" fxLayout="column">
+                                <div fxLayout="row" fxLayoutAlign="center center">
+                                    <button class="mr-8" mat-raised-button matStepperPrevious type="button" color="accent">
+                                        Previous
+                                    </button>
+                                    <button mat-raised-button matStepperNext type="button" color="accent">
+                                        Next
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </mat-step>
                     <mat-step>
                         <ng-template matStepLabel>Done</ng-template>
 

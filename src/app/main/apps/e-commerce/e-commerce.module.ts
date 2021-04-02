@@ -40,6 +40,7 @@ import { ProductDialogComponent } from "./product-dialog/product-dialog.componen
 import { MatDialogModule } from "@angular/material/dialog";
 import { ProductSaveConfirmationComponent } from "./product-save-confirmation/product-save-confirmation.component";
 import { TypeofPipe } from "./typeofpipe";
+import { Filterpipe } from "./filterPipe";
 
 const routes: Routes = [
     {
@@ -88,6 +89,7 @@ const routes: Routes = [
         ProductDialogComponent,
         ProductSaveConfirmationComponent,
         TypeofPipe,
+        Filterpipe,
     ],
     imports: [
         RouterModule.forChild(routes),

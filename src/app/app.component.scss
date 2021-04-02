@@ -1,9 +1,6 @@
 @import "src/@fuse/scss/fuse";
 :host {
-    body.theme-default .accent,
-    body.theme-default .accent-bg {
-        background-color: #eb7f56 !important;
-    }
+    
     position: relative;
     display: flex;
     flex: 1 1 auto;
