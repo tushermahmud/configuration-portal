@@ -106,8 +106,17 @@
 }
 
 ::ng-deep {
+    .ngx-file-drop__drop-zone {
+        border: 1px dashed rgba(0, 0, 0, 0.87);
+    }
+    .filedrop {
+        margin: auto;
+        height: 100px;
+        border: 2px dotted #000000;
+        border-radius: 30px;
+    }
     .add-photo-drop-zone {
-        border: 1px dashed #47789f;
+        border: 1px dashed rgba(0, 0, 0, 0.87);
         border-radius: 4px;
         height: 144px;
     }
@@ -130,6 +139,12 @@
 
 .mat-list-item-content {
     padding: 0px 0px !important;
+}
+
+.ngx-file-drop__drop-zone {
+    height: 160px !important;
+    border-radius: 0px !important;
+    border: 2px dotted black !important;
 }
 
 e-commerce-products {

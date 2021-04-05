@@ -20,7 +20,7 @@
             <span>{{ productData?.productName }}</span>
         </div>
         <h3 class="text-bold">Categories</h3>
-        <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+        <mat-form-field appearance="linear" floatLabel="always" class="w-100-p">
             <mat-chip-list formControlName="unknown">
                 <mat-chip *ngFor="let category of productData?.categories">
                     {{ category }}

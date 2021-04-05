@@ -71,6 +71,7 @@ export class EcommerceProductComponent
     implements OnInit, OnDestroy, AfterViewInit {
     singleProduct: ProductData;
     pageType: string;
+    collapsToogle: boolean = false;
     productForm: FormGroup;
     public images: NgxFileDropEntry[] = [];
     deletedImages: any[] = [];
@@ -79,6 +80,9 @@ export class EcommerceProductComponent
     nameSearch: string = "";
     variants: ProductData[] = [];
     // Private
+    flex1: number = 70;
+    flex2: number = 30;
+
     filteredProduct: ProductData[];
     // filter: ElementRef;
     private _unsubscribeAll: Subject<any>;
@@ -184,7 +188,7 @@ export class EcommerceProductComponent
                         productName: ["", Validators.required],
                         productUrl: ["", Validators.required],
                         ean: ["", Validators.required],
-                        active: [false, Validators.required],
+                        active: [false],
                     });
 
                     this.verticalStepperStep2 = this._formBuilder.group({
@@ -198,7 +202,7 @@ export class EcommerceProductComponent
                         price: ["", Validators.required],
                     });
                     this.verticalStepperStep4 = this._formBuilder.group({
-                        images: ["", Validators.required],
+                        images: [[], Validators.required],
                     });
                     this.verticalStepperStep5 = this._formBuilder.group({
                         categories: [""],
@@ -263,7 +267,16 @@ export class EcommerceProductComponent
     goToBack() {
         this._location.back();
     }
-
+    collapsToggle() {
+        this.collapsToogle = !this.collapsToogle;
+        if (!this.collapsToogle) {
+            this.flex1 = 70;
+            this.flex2 = 30;
+        } else {
+            this.flex2 = 0;
+            this.flex1 = 100;
+        }
+    }
     get keywordControls(): FormArray {
         return this.verticalStepperStep2.controls["keywords"] as FormArray;
     }
@@ -319,7 +332,19 @@ export class EcommerceProductComponent
      * @returns {FormGroup}
      */
     public dropped(files: NgxFileDropEntry[]) {
-        this.images = files;
+        // this.images = files;
+        this.allFiles = [];
+        if (files.length) {
+            files.map((file) => {
+                this.allFiles.push({
+                    fileId: Math.floor(Math.random() * 1000000 + 1),
+                    fileType: file.fileEntry.isFile,
+                    fileUrl: file.fileEntry.name,
+                    isDeleted: false,
+                });
+            });
+        }
+        console.log(this.allFiles);
         for (const droppedFile of files) {
             // Is it a file?
             if (droppedFile.fileEntry.isFile) {
@@ -416,7 +441,8 @@ export class EcommerceProductComponent
      */
     saveProduct(): void {
         const data = this.productForm.getRawValue();
-        data.handle = FuseUtils.handleize(data.name);
+        // data.handle = FuseUtils.handleize(data.name);
+        console.log(data);
 
         this._ecommerceProductService.saveProduct(data).then(() => {
             // Trigger the subscription with new data

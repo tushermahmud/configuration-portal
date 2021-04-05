@@ -38,13 +38,16 @@
         </button>
     </div>
     <div class="center" fxLayout="row" fxLayoutAlign="start start" *ngIf="pageType === 'edit'">
-        <fuse-sidebar class="sidebar" name="simple-left-sidebar-1" position="left" lockedOpen="gt-md" fxFlex="30" fxFill>
+        <fuse-sidebar class="sidebar" name="simple-left-sidebar-1" position="left" *ngIf="!collapsToogle" lockedOpen="gt-md" fxFlex="{{ flex2 }}" fxFill>
             <div class="content p-24">
                 <fuse-demo-sidebar [product]="singleProduct"></fuse-demo-sidebar>
             </div>
         </fuse-sidebar>
 
-        <div class="content-card" fxFlex="70">
+        <div class="content-card" fxFlex="{{ flex1 }}">
+            <button (click)="collapsToggle()">
+                <mat-icon>menu</mat-icon>
+            </button>
             <div class="content">
                 <form name="productForm" [formGroup]="productForm" class="product w-100-p" fxLayout="" fxFlex>
                     <mat-tab-group>
@@ -83,28 +86,8 @@
                                     <mat-datepicker #picker1></mat-datepicker>
                                     <!-- #enddocregion toggle -->
                                 </mat-form-field>
-                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
-                                    <mat-label>Categories</mat-label>
 
-                                    <mat-chip-list #categoryList name="categories" formControlName="categories">
-                                        <mat-chip *ngFor="
-                                                let category of singleProduct.categories
-                                            " [removable]="true" (removed)="
-                                                singleProduct.removeCategory(
-                                                    category
-                                                )
-                                            ">
-                                            {{ category }}
-                                            <mat-icon matChipRemove>cancel</mat-icon>
-                                        </mat-chip>
-
-                                        <input [matChipInputFor]="categoryList" [matChipInputAddOnBlur]="true" (matChipInputTokenEnd)="
-                                                singleProduct.addCategory(
-                                                    $event
-                                                )
-                                            " />
-                                    </mat-chip-list>
-                                </mat-form-field>
+                                <mat-slide-toggle formControlName="active">Active</mat-slide-toggle>
                             </div>
                         </mat-tab>
                         <mat-tab label="Description">
@@ -124,6 +107,10 @@
                                     <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
                                         <mat-label>Brand</mat-label>
                                         <input matInput placeholder="Brand" name="brand" formControlName="brand" />
+                                    </mat-form-field>
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>EAN</mat-label>
+                                        <input matInput placeholder="EAN" name="ean" formControlName="ean" />
                                     </mat-form-field>
                                     <div fxLayout="row wrap" fxLayoutAlign="start start">
                                         <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
@@ -156,7 +143,7 @@
                                 </div>
                             </div>
                         </mat-tab>
-                        <mat-tab label="Product Images">
+                        <mat-tab label="Medias">
                             <div class="tab-content p-24" fusePerfectScrollbar>
                                 <div fxLayout="row wrap" fxLayoutAlign="start start">
                                     <!-- <div *ngIf="product.images.length === 0" class="product-image" fxlayout="row" fxLayoutAlign="center center">
@@ -175,7 +162,7 @@
                                             margin: auto;
                                             width: 70%;
                                         ">
-                                        <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector" [showBrowseBtn]="true" style="height: 160px">
+                                        <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector" showBrowseBtn="true" style="height: 160px">
                                             <div fxFlex fxLayout="column" fxLayoutAlign="start start" style="margin-top: 42px">
                                                 <div style="
                                                         display: table;
@@ -198,6 +185,7 @@
                                                 <button style="
                                                         display: table;
                                                         margin: auto;
+                                                        background-color: #ff8a65;
                                                     " mat-raised-button color="warn" (click)="openFileSelector()">
                                                     Browse Files
                                                 </button>
@@ -210,9 +198,9 @@
                                             width: 70%;
                                         ">
                                         <!--product images-->
-                                        <mat-list *ngIf="images.length">
+                                        <!-- <mat-list *ngIf="allFiles.length">
                                             <mat-list-item *ngFor="
-                                                    let item of images;
+                                                    let item of allFiles;
                                                     let i = index
                                                 " style="padding: 0 0">
                                                 <div fxFlex fxLayout="row" fxLayoutAlign="start start" style="
@@ -226,7 +214,7 @@
                                                     </div>
                                                     <div style="width: 100%">
                                                         <div mat-line>
-                                                            {{ item.relativePath }}
+                                                            {{ item.fileUrl }}
                                                         </div>
                                                         <div mat-line>time</div>
                                                         <div mat-line>
@@ -236,13 +224,13 @@
                                                     <div style="margin-top: 20px">
                                                         <mat-icon mat-list-icon (click)="
                                                                 removeFile(
-                                                                    item.id
+                                                                    item.fileId
                                                                 )
                                                             ">delete</mat-icon>
                                                     </div>
                                                 </div>
                                             </mat-list-item>
-                                        </mat-list>
+                                        </mat-list> -->
                                         <!--product images-->
                                         <mat-list *ngFor="
                                                 let image of allFiles.length
@@ -294,12 +282,29 @@
                                 </mat-form-field>
                             </div>
                         </mat-tab>
-
-                        <mat-tab label="Inventory">
+                        <mat-tab label="Classifications">
                             <div class="tab-content p-24" fusePerfectScrollbar>
                                 <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
-                                    <mat-label>EAN</mat-label>
-                                    <input matInput placeholder="EAN" name="ean" formControlName="ean" />
+                                    <mat-label>Categories</mat-label>
+
+                                    <mat-chip-list #categoryList name="categories" formControlName="categories">
+                                        <mat-chip *ngFor="
+                                                let category of singleProduct.categories
+                                            " [removable]="true" (removed)="
+                                                singleProduct.removeCategory(
+                                                    category
+                                                )
+                                            ">
+                                            {{ category }}
+                                            <mat-icon matChipRemove>cancel</mat-icon>
+                                        </mat-chip>
+
+                                        <input [matChipInputFor]="categoryList" [matChipInputAddOnBlur]="true" (matChipInputTokenEnd)="
+                                                singleProduct.addCategory(
+                                                    $event
+                                                )
+                                            " />
+                                    </mat-chip-list>
                                 </mat-form-field>
                             </div>
                         </mat-tab>
@@ -350,7 +355,6 @@
     </div>
     <div class="center" *ngIf="pageType === 'new'">
         <div class="content-card">
-            <div class="h1 pt-48 px-20">Vertical Stepper</div>
             <div class="vertical-stepper-wrapper">
                 <!-- VERTICAL STEPPER EXAMPLE -->
                 <mat-vertical-stepper class="mat-elevation-z4" [linear]="true">
@@ -376,7 +380,7 @@
                                     <input matInput formControlName="ean" required />
                                     <mat-error>EAN is required!</mat-error>
                                 </mat-form-field>
-                                <mat-slide-toggle formControlName="active" required>Active</mat-slide-toggle>
+                                <mat-slide-toggle formControlName="active">Active</mat-slide-toggle>
                             </div>
 
                             <div fxLayout="row" fxLayoutAlign="center center">
@@ -425,7 +429,7 @@
                                             {{ fruit }}
                                             <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
                                         </mat-chip>
-                                        <input placeholder="New fruit..." [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="
+                                        <input placeholder="Keywords..." [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="
                                                 separatorKeysCodes
                                             " [matChipInputAddOnBlur]="addOnBlur" (matChipInputTokenEnd)="add($event)" />
                                     </mat-chip-list>
@@ -516,7 +520,9 @@
                                             <button style="
                                                     display: table;
                                                     margin: auto;
-                                                " mat-raised-button color="warn" (click)="openFileSelector()">
+                                                    background: #ff8a65;
+                                                    color: rgba(0, 0, 0, 0.87);
+                                                " mat-raised-button color="orange" (click)="openFileSelector()">
                                                 Browse Files
                                             </button>
                                         </div>
@@ -665,14 +671,14 @@
                                     <button class="mr-8" mat-raised-button matStepperPrevious type="button" color="accent">
                                         Previous
                                     </button>
-                                    <button mat-raised-button matStepperNext type="button" color="accent">
-                                        Next
+                                    <button mat-raised-button matStepperNext type="button" color="accent" (click)="finishVerticalStepper()">
+                                        Save
                                     </button>
                                 </div>
                             </div>
                         </form>
                     </mat-step>
-                    <mat-step>
+                    <!-- <mat-step>
                         <ng-template matStepLabel>Done</ng-template>
 
                         <div class="h2 m-16" fxLayout="row" fxLayoutAlign="center center"></div>
@@ -681,11 +687,11 @@
                             <button class="mr-8" mat-raised-button matStepperPrevious type="button" color="accent">
                                 Previous
                             </button>
-                            <button mat-raised-button type="button" color="accent" (click)="finishVerticalStepper()">
+                            <button mat-raised-button type="button" color="accent" ">
                                 Save
                             </button>
                         </div>
-                    </mat-step>
+                    </mat-step> -->
                 </mat-vertical-stepper>
                 <!-- / VERTICAL STEPPER EXAMPLE -->
             </div>
