@@ -324,11 +324,11 @@
                                                 <span>{{
                                                     variant.productName
                                                 }}</span>
-                                                <button mat-icon-button (click)="
+                                                <a mat-icon-button (click)="
                                                         removeVariant(variant)
                                                     ">
                                                     <mat-icon>cancel</mat-icon>
-                                                </button>
+                                                </a>
                                             </mat-card-title>
                                         </mat-card-header>
                                     </mat-card>
@@ -497,7 +497,7 @@
                                         margin: auto;
                                         width: 70%;
                                     ">
-                                    <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector" [showBrowseBtn]="true" style="height: 160px">
+                                    <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector" showBrowseBtn="true" style="height: 160px">
                                         <div fxFlex fxLayout="column" fxLayoutAlign="start start" style="margin-top: 42px">
                                             <div style="
                                                     display: table;
@@ -648,9 +648,9 @@
                                 <mat-card-header>
                                     <mat-card-title fxFlex fxLayout="row" fxLayoutAlign="space-between">
                                         <span>{{ variant.productName }}</span>
-                                        <button mat-icon-button (click)="removeVariant(variant)">
+                                        <a mat-icon-button (click)="removeVariant(variant)">
                                             <mat-icon>cancel</mat-icon>
-                                        </button>
+                                        </a>
                                     </mat-card-title>
                                 </mat-card-header>
                             </mat-card>

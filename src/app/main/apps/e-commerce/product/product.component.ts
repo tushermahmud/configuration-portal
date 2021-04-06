@@ -360,6 +360,9 @@ export class EcommerceProductComponent
             }
         }
     }
+    stopEnter($event) {
+        $event.stopPropaggation();
+    }
     removeFile(id) {
         this.allFiles.find((file) => {
             if (file.fileId === id) {
