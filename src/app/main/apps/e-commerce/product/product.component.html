@@ -473,13 +473,13 @@
                         <form fxLayout="column" [formGroup]="verticalStepperStep4">
                             <ng-template matStepLabel>Images</ng-template>
 
-                            <div fxFlex="1 0 auto" fxLayout="column">
+                            <!-- <div fxFlex="1 0 auto" fxLayout="column">
                                 <mat-form-field appearance="outline" fxFlex="100">
                                     <mat-label>Images</mat-label>
                                     <input matInput formControlName="images" required />
                                     <mat-error>Image is required!</mat-error>
                                 </mat-form-field>
-                            </div>
+                            </div> -->
                             <div fxLayout="row wrap" fxLayoutAlign="start start" class="mb-24">
                                 <!-- <div *ngIf="product.images.length === 0" class="product-image" fxlayout="row" fxLayoutAlign="center center">
                                     <img class="media" [src]="
@@ -534,6 +534,7 @@
                                         width: 70%;
                                     ">
                                     <!--product images-->
+                                    <mat-error *ngIf="allFiles.length < 0">Image is required!</mat-error>
                                     <mat-list *ngIf="images.length">
                                         <mat-list-item *ngFor="
                                                 let item of images;
@@ -569,6 +570,8 @@
                                                 ? allFiles
                                                 : []
                                         ">
+                                        <mat-error *ngIf="allFiles.length < 0">Image is required!</mat-error>
+
                                         <mat-list-item style="padding: 0 0" *ngIf="!image.isDeleted">
                                             <div fxFlex fxLayout="row" fxLayoutAlign="start start" style="
                                                     width: 100%;
@@ -678,20 +681,6 @@
                             </div>
                         </form>
                     </mat-step>
-                    <!-- <mat-step>
-                        <ng-template matStepLabel>Done</ng-template>
-
-                        <div class="h2 m-16" fxLayout="row" fxLayoutAlign="center center"></div>
-
-                        <div fxLayout="row" fxLayoutAlign="center center">
-                            <button class="mr-8" mat-raised-button matStepperPrevious type="button" color="accent">
-                                Previous
-                            </button>
-                            <button mat-raised-button type="button" color="accent" ">
-                                Save
-                            </button>
-                        </div>
-                    </mat-step> -->
                 </mat-vertical-stepper>
                 <!-- / VERTICAL STEPPER EXAMPLE -->
             </div>

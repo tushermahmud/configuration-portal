@@ -202,7 +202,7 @@ export class EcommerceProductComponent
                         price: ["", Validators.required],
                     });
                     this.verticalStepperStep4 = this._formBuilder.group({
-                        images: [[], Validators.required],
+                        images: [[]],
                     });
                     this.verticalStepperStep5 = this._formBuilder.group({
                         categories: [""],
@@ -266,6 +266,9 @@ export class EcommerceProductComponent
     }
     goToBack() {
         this._location.back();
+    }
+    search() {
+        this.filteredProduct = [];
     }
     collapsToggle() {
         this.collapsToogle = !this.collapsToogle;
@@ -334,6 +337,7 @@ export class EcommerceProductComponent
     public dropped(files: NgxFileDropEntry[]) {
         // this.images = files;
         this.allFiles = [];
+
         if (files.length) {
             files.map((file) => {
                 this.allFiles.push({
@@ -343,6 +347,9 @@ export class EcommerceProductComponent
                     isDeleted: false,
                 });
             });
+        }
+        if (this.pageType === "new") {
+            this.verticalStepperStep4.get("images").setValue(this.allFiles);
         }
         console.log(this.allFiles);
         for (const droppedFile of files) {
